@@ -260,7 +260,6 @@ function renderWelcome() {
       <div class="welcome-left">
           <div class="welcome-logo">
             <img class="logo-icon" src="https://bitcoinflash.xyz/logo.png" alt="Flash"/>
-            <span>Flash</span>
           </div>
         <h1>${t('welcome_h1')}</h1>
         <p class="subtitle">${t('welcome_sub')}</p>
