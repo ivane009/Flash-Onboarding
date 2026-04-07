@@ -13,6 +13,11 @@
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
   </head>
   <body>
+    <script>
+      if (!sessionStorage.getItem('showAuth')) {
+        window.location.href = '/landing.html';
+      }
+    </script>
 
     <div id="root"></div>
     <div id="operatorPopup" class="operator-popup hidden">

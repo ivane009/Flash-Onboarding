@@ -5,7 +5,7 @@ const API_BASE = 'https://staging.bitcoinflash.xyz/api/v1';
 
 const state = {
   step: 0, totalSteps: 6, userId: null, jwtToken: null,
-  lang: 'es',
+  lang: sessionStorage.getItem('lang') || 'fr', formTab: 'register',
   form: {
     name: '', email: '', password: '', whatsapp: '',
     country: 'BJ', provider: '', mobileMoneyPhone: '',
@@ -60,16 +60,34 @@ const operatorImages = {
     'https://eu-images.contentstack.com/v3/assets/blta47798dd33129a0c/bltd2644456b687c90e/68b6d3c547d0e167b4aed181/MTN_Fintech_CEO_Francis_Matseketsa_and_MTN_South_Sudan_CEO_Mapula_Bodibe_(1)_(1).jpg',
     'https://pbs.twimg.com/media/Dm4_sA3WwAA6lyA.jpg'
   ],
-  moov: [],
-  celtiis: [],
-  togocel: [],
+  moov: [
+    'https://play-lh.googleusercontent.com/LSbvPMeHFokNEckuBuy60MVehvXrNGc4AFL-h2RQ2G6SHuM5j_PjYjy2VrXWMPj9L8s=w526-h296-rw',
+    'https://mir-s3-cdn-cf.behance.net/project_modules/max_632_webp/77f5c9180801537.651157f807bc5.jpg',
+    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTL-EkKDAy96Q6GSqBgFP4_rarCPLzvGN6hZQ&s'
+  ],
+  celtiis: [
+    'https://www.afro-impact.com/wp-content/uploads/2022/10/celtiis-benin-lancement-offre-services.jpg',
+    'https://celtiis.bj/_next/image?url=%2FSLIDER-FEDELITE.jpg&w=3840&q=75',
+    'https://celtiis.bj/celtiis-cash.jpg'
+  ],
+  togocel: [
+    'https://storage.goantifraud.com//images/news/7ffbe460ddcd1bf7b90d6d4f814ae1bb.jpg'
+  ],
 };
 
 const operatorLogos = {
   mtn: 'https://i.pinimg.com/236x/f2/f9/38/f2f9385a59cf088b7b77472f3636d4fb.jpg',
+  moov: 'https://fastly.mwm-storage.mwmcdn.com/raw_files/175607d1-b6ed-4ee2-a2c5-a9900ad0c6bc',
+  celtiis: 'https://media.licdn.com/dms/image/v2/D4E0BAQHtTO1iuxkoyA/company-logo_200_200/company-logo_200_200/0/1666366806951?e=2147483647&v=beta&t=rN6388-_wF5DRFfh7RZkcvWAlK-XwJ-mRE2KAD7tb4U',
+  togocel: 'https://cdn.bitrefill.com/content/cn/b_rgb%3A217f1c%2Cc_pad%2Ch_800%2Cw_800/v1647309884/togocel-togo.webp',
 };
 
+const welcomeCarouselImages = [
+  'https://www.shutterstock.com/image-illustration/abstract-dark-neon-background-bitcoin-600nw-1887117790.jpg'
+];
+
 let currentCarouselIndex = {};
+let currentWelcomeCarouselIndex = 0;
 
 function showOperatorPopup(id) {
   const provider = providers.find(p => p.id === id);
@@ -254,7 +272,7 @@ function renderStep() {
 /* ══════════════════════════════════════════════
    PASO 0 — WELCOME
 ══════════════════════════════════════════════ */
-function renderWelcome() {
+function renderLanding() {
   return `
     <div class="welcome-layout">
       <div class="welcome-left">
@@ -263,10 +281,10 @@ function renderWelcome() {
           </div>
         <h1>${t('welcome_h1')}</h1>
         <p class="subtitle">${t('welcome_sub')}</p>
-        <div class="stats-row">
-          <div class="stat-pill"><div class="stat-pill-num">500+</div><div class="stat-pill-label">${t('welcome_users')}</div></div>
-          <div class="stat-pill"><div class="stat-pill-num">&lt;5s</div><div class="stat-pill-label">${t('welcome_tx')}</div></div>
-          <div class="stat-pill"><div class="stat-pill-num">2%</div><div class="stat-pill-label">${t('welcome_fee')}</div></div>
+        <div class="welcome-carousel" id="welcomeCarousel">
+          <div class="welcome-carousel-track" id="welcomeCarouselTrack">
+            ${welcomeCarouselImages.map((img, i) => `<img src="${img}" class="welcome-carousel-img ${i === 0 ? 'active' : ''}" alt="Welcome"/>`).join('')}
+          </div>
         </div>
         <div class="providers-label">${t('welcome_works')}</div>
         <div class="providers-row">
@@ -275,12 +293,70 @@ function renderWelcome() {
           <button class="provider-pill" onclick="showOperatorPopup('celtiis')">🟢 Celtiis</button>
           <button class="provider-pill" onclick="showOperatorPopup('togocel')">🔴 Togocel</button>
         </div>
-        
+      </div>
+      <div class="welcome-right landing-right">
+        <div class="landing-hero-text">
+          <h2>${t('landing_h2')}</h2>
+          <p>${t('landing_sub')}</p>
+        </div>
+        <div class="landing-cta">
+          <button class="btn btn-primary btn-lg" onclick="startAuth('register')">⚡ ${t('btn_register')}</button>
+          <button class="btn btn-secondary btn-lg" onclick="startAuth('login')">${t('tab_login')}</button>
+        </div>
+        <div class="landing-features">
+          <div class="landing-feature">
+            <span class="feature-icon">⚡</span>
+            <span>${t('feat_fast')}</span>
+          </div>
+          <div class="landing-feature">
+            <span class="feature-icon">🔒</span>
+            <span>${t('feat_secure')}</span>
+          </div>
+          <div class="landing-feature">
+            <span class="feature-icon">💰</span>
+            <span>${t('feat_cheap')}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+window.startAuth = function(tab) {
+  state.formTab = tab;
+  state.step = 1;
+  renderStep();
+};
+
+function renderWelcome() {
+  if (state.step === 0) {
+    return renderLanding();
+  }
+  return `
+    <div class="welcome-layout">
+      <div class="welcome-left">
+          <div class="welcome-logo">
+            <img class="logo-icon" src="https://bitcoinflash.xyz/logo.png" alt="Flash"/>
+          </div>
+        <h1>${t('welcome_h1')}</h1>
+        <p class="subtitle">${t('welcome_sub')}</p>
+        <div class="welcome-carousel" id="welcomeCarousel">
+          <div class="welcome-carousel-track" id="welcomeCarouselTrack">
+            ${welcomeCarouselImages.map((img, i) => `<img src="${img}" class="welcome-carousel-img ${i === 0 ? 'active' : ''}" alt="Welcome"/>`).join('')}
+          </div>
+        </div>
+        <div class="providers-label">${t('welcome_works')}</div>
+        <div class="providers-row">
+          <button class="provider-pill" onclick="showOperatorPopup('mtn')">🟡 MTN MoMo</button>
+          <button class="provider-pill" onclick="showOperatorPopup('moov')">🔵 Moov</button>
+          <button class="provider-pill" onclick="showOperatorPopup('celtiis')">🟢 Celtiis</button>
+          <button class="provider-pill" onclick="showOperatorPopup('togocel')">🔴 Togocel</button>
+        </div>
       </div>
       <div class="welcome-right">
         <h2>${t('welcome_h2')}</h2>
         <p class="sub">${t('welcome_sub2')}</p>
-        ${buildRegisterForm()}
+        ${buildAuthForm()}
       </div>
     </div>
   `;
@@ -294,7 +370,7 @@ function renderRegister() {
   <div class="card">
     <h2>${t('h2_account')}</h2>
     <p class="subtitle">${t('subtitle_account')}</p>
-    ${buildRegisterForm()}
+    ${buildAuthForm()}
   </div>`;
 }
 
@@ -308,21 +384,21 @@ function buildRegisterForm() {
   return `
     <div class="form-row">
       <div class="form-group">
-        <label>${t('label_name')}</label>
+        <label>${t('label_name')} <span class="required">*</span></label>
         <input id="f-firstname" type="text" placeholder="Kofi" value="${fn}"/>
       </div>
       <div class="form-group">
-        <label>${t('label_lastname')}</label>
+        <label>${t('label_lastname')} <span class="required">*</span></label>
         <input id="f-lastname" type="text" placeholder="Mensah" value="${ln}"/>
       </div>
     </div>
     <div class="form-group">
-      <label>${t('label_email')}</label>
+      <label>${t('label_email')} <span class="required">*</span></label>
       <input id="f-email" type="email" placeholder="kofi@example.com" value="${state.form.email}"/>
     </div>
 
    <div class="form-group">
-    <label>${t('label_phone')}</label>
+    <label>${t('label_phone')} <span class="required">*</span></label>
       <div class="phone-row">
         <div class="country-selector" id="countrySelector" onclick="toggleCountryDropdown()">
           <span id="selectedFlag">🇧🇯</span>
@@ -341,10 +417,10 @@ function buildRegisterForm() {
 </div>
 
     <div class="form-group">
-      <label>${t('label_pass')}</label>
+      <label>${t('label_pass')} <span class="required">*</span></label>
       <div class="password-wrap">
         <input id="f-password" type="password" placeholder="${t('pass_placeholder')}" value="${state.form.password}" oninput="updatePwStrength(this.value)"/>
-        <button class="toggle-pw" onclick="togglePw('f-password',this)" type="button">👁️</button>
+        <button class="toggle-pw" onclick="togglePw('f-password',this)" type="button"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
       </div>
       <div class="pw-strength-bar">
         <div class="pw-seg" id="ps1"></div><div class="pw-seg" id="ps2"></div>
@@ -353,10 +429,10 @@ function buildRegisterForm() {
       <div class="pw-label" id="pwLabel"></div>
     </div>
     <div class="form-group">
-      <label>${t('label_pass2')}</label>
+      <label>${t('label_pass2')} <span class="required">*</span></label>
       <div class="password-wrap">
         <input id="f-password2" type="password" placeholder="${t('pass2_placeholder')}"/>
-        <button class="toggle-pw" onclick="togglePw('f-password2',this)" type="button">👁️</button>
+        <button class="toggle-pw" onclick="togglePw('f-password2',this)" type="button"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
       </div>
     </div>
     <button class="btn btn-primary" id="btnRegister" onclick="doRegister()">${t('btn_register')}</button>
@@ -364,10 +440,45 @@ function buildRegisterForm() {
       <span class="trust-item">${t('trust1')}</span>
       <span class="trust-item">${t('trust2')}</span>
       <span class="trust-item">${t('trust3')}</span>
-    </div>
-    <div class="login-link">
-      ${t('login_link')} <a onclick="showToast(t('toast_login_soon'),'success')">${t('login_connect')}</a>
     </div>`;
+}
+
+function buildLoginForm() {
+  return `
+    <div class="form-group">
+      <label>${t('label_email')} <span class="required">*</span></label>
+      <input id="f-login-email" type="email" placeholder="kofi@example.com"/>
+    </div>
+    <div class="form-group">
+      <label>${t('label_pass')} <span class="required">*</span></label>
+      <div class="password-wrap">
+        <input id="f-login-password" type="password" placeholder="${t('pass_placeholder')}"/>
+        <button class="toggle-pw" onclick="togglePw('f-login-password',this)" type="button"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+      </div>
+    </div>
+    <button class="btn btn-primary" id="btnLogin" onclick="doLogin()">${t('btn_login')}</button>
+    <div class="login-hint">
+      <span>${t('forgot_password') || '¿Olvidaste tu contraseña?'}</span>
+    </div>`;
+}
+
+window.toggleFormTab = function(tab) {
+  state.formTab = tab;
+  renderWelcome();
+};
+
+function buildAuthForm() {
+  return `
+    <div class="form-tabs">
+      <button class="form-tab ${state.formTab === 'register' ? 'active' : ''}" onclick="toggleFormTab('register')">
+        ${t('tab_create_account')}
+      </button>
+      <button class="form-tab ${state.formTab === 'login' ? 'active' : ''}" onclick="toggleFormTab('login')">
+        ${t('tab_login')}
+      </button>
+    </div>
+    ${state.formTab === 'register' ? buildRegisterForm() : buildLoginForm()}
+  `;
 }
 
 
@@ -643,18 +754,37 @@ function getOTPValue() {
 /* ══════════════════════════════════════════════
    LLAMADAS A LA API
 ══════════════════════════════════════════════ */
+function validateEmail(email) {
+  const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return re.test(email);
+}
+
 async function doRegister() {
-  const first    = document.getElementById('f-firstname')?.value.trim();
-  const last     = document.getElementById('f-lastname')?.value.trim();
-  const email    = document.getElementById('f-email')?.value.trim();
-  const pass     = document.getElementById('f-password')?.value;
-  const pass2    = document.getElementById('f-password2')?.value;
-  const country  = state.form.country;
-  const dialCode = allCountries.find(c => c.code === country)?.dial || '';
-  const whatsapp = dialCode + document.getElementById('f-whatsapp')?.value.trim();
-   
-  if (pass.length < 8)  { showToast(t('toast_pw_short')); return; }
-    if (pass !== pass2)   { showToast(t('toast_pw_match')); return; }
+  clearFormErrors();
+  const first       = document.getElementById('f-firstname')?.value.trim();
+  const last        = document.getElementById('f-lastname')?.value.trim();
+  const email       = document.getElementById('f-email')?.value.trim();
+  const pass        = document.getElementById('f-password')?.value;
+  const pass2       = document.getElementById('f-password2')?.value;
+  const country     = state.form.country;
+  const dialCode    = allCountries.find(c => c.code === country)?.dial || '';
+  const whatsappRaw = document.getElementById('f-whatsapp')?.value.trim();
+  const whatsapp    = dialCode + whatsappRaw;
+
+  const fieldLabels = { firstname: t('label_name'), lastname: t('label_lastname'), email: t('label_email'), whatsapp: t('label_phone'), password: t('label_pass'), password2: t('label_pass2') };
+
+  if (!first)           { showFieldError('f-firstname'); showToast(fieldLabels.firstname + ': ' + t('toast_field_required')); return; }
+  if (!last)            { showFieldError('f-lastname'); showToast(fieldLabels.lastname + ': ' + t('toast_field_required')); return; }
+  const nameRegex = /^[a-zA-Z\sáéíóúÁÉÍÓÚñÑ]+$/;
+  if (!nameRegex.test(first)) { showFieldError('f-firstname'); showToast(t('toast_name_invalid')); return; }
+  if (!nameRegex.test(last)) { showFieldError('f-lastname'); showToast(t('toast_lastname_invalid')); return; }
+  if (!email)           { showFieldError('f-email'); showToast(fieldLabels.email + ': ' + t('toast_field_required')); return; }
+  if (!validateEmail(email)) { showFieldError('f-email'); showToast(t('toast_email_invalid')); return; }
+  if (!whatsappRaw)     { showFieldError('f-whatsapp'); showToast(fieldLabels.whatsapp + ': ' + t('toast_field_required')); return; }
+  if (!pass)            { showFieldError('f-password'); showToast(fieldLabels.password + ': ' + t('toast_field_required')); return; }
+  if (pass.length < 8)  { showFieldError('f-password'); showToast(t('toast_pw_short')); return; }
+  if (!pass2)           { showFieldError('f-password2'); showToast(fieldLabels.password2 + ': ' + t('toast_field_required')); return; }
+  if (pass !== pass2)   { showFieldError('f-password2'); showToast(t('toast_pw_match')); return; }
 
   const btn = document.getElementById('btnRegister');
   if (btn) { btn.textContent = t('btn_creating'); btn.disabled = true; }
@@ -684,7 +814,21 @@ async function doVerifyOTP() {
 }
 
 async function doLogin() {
-  // No se usa en modo demo
+  clearFormErrors();
+  const email = document.getElementById('f-login-email')?.value.trim();
+  const pass = document.getElementById('f-login-password')?.value;
+
+  if (!email) { showFieldError('f-login-email'); showToast(t('label_email') + ': ' + t('toast_field_required')); return; }
+  if (!pass) { showFieldError('f-login-password'); showToast(t('label_pass') + ': ' + t('toast_field_required')); return; }
+
+  const btn = document.getElementById('btnLogin');
+  if (btn) { btn.textContent = t('btn_logging_in'); btn.disabled = true; }
+
+  await new Promise(r => setTimeout(r, 800));
+
+  showToast(t('toast_logged_in'), 'success');
+  state.step = 2;
+  renderStep();
 }
 
 async function doResendOTP() {
@@ -697,8 +841,50 @@ async function doResendOTP() {
 ══════════════════════════════════════════════ */
 function togglePw(id, btn) {
   const el = document.getElementById(id);
-  if (el.type === 'password') { el.type = 'text';     btn.textContent = '🙈'; }
-  else                        { el.type = 'password'; btn.textContent = '👁️'; }
+  if (el.type === 'password') {
+    el.type = 'text';
+    btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
+  } else {
+    el.type = 'password';
+    btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+  }
+}
+
+function showFieldError(inputId) {
+  const input = document.getElementById(inputId);
+  if (!input) return;
+  input.classList.add('input-error');
+  const wrap = input.closest('.password-wrap') || input.closest('.phone-row');
+  if (wrap) {
+    const icon = document.createElement('span');
+    icon.className = 'input-error-icon';
+    icon.textContent = '⚠️';
+    wrap.style.position = 'relative';
+    wrap.appendChild(icon);
+  } else {
+    input.style.position = 'relative';
+    const icon = document.createElement('span');
+    icon.className = 'input-error-icon';
+    icon.textContent = '⚠️';
+    icon.style.position = 'absolute';
+    icon.style.right = '10px';
+    icon.style.top = '50%';
+    icon.style.transform = 'translateY(-50%)';
+    input.parentElement.style.position = 'relative';
+    input.parentElement.appendChild(icon);
+  }
+  input.addEventListener('input', function removeErr() {
+    input.classList.remove('input-error');
+    const parent = input.closest('.password-wrap') || input.closest('.phone-row') || input.parentElement;
+    const icon = parent?.querySelector('.input-error-icon');
+    if (icon) icon.remove();
+    input.removeEventListener('input', removeErr);
+  }, { once: true });
+}
+
+function clearFormErrors() {
+  document.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
+  document.querySelectorAll('.input-error-icon').forEach(el => el.remove());
 }
 
 function selectProvider(id) { state.form.provider = id; renderStep(); }
@@ -894,4 +1080,13 @@ function updateProgress() {
 }
 
 initDOM();
-initI18n().then(() => { renderStep(); updateProgress(); });
+initI18n().then(() => {
+  if (sessionStorage.getItem('showAuth') === 'true') {
+    state.step = 1;
+    state.formTab = sessionStorage.getItem('authTab') || 'register';
+    sessionStorage.removeItem('showAuth');
+    sessionStorage.removeItem('authTab');
+  }
+  renderStep();
+  updateProgress();
+});
