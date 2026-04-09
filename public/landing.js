@@ -29,13 +29,36 @@ function toggleFaq(el) {
   if (!isOpen) { ans.classList.add('open'); icon.classList.add('open'); }
 }
 
-function updateTicker() {
-  let btcBase = 83200;
-  setInterval(() => {
-    btcBase += (Math.random() - 0.49) * 80;
-    btcBase = Math.round(btcBase);
-    document.getElementById('btc-ticker').textContent = '$' + btcBase.toLocaleString();
-  }, 3000);
+async function fetchMempoolData() {
+  try {
+    const [pricesRes, blockRes, feesRes] = await Promise.all([
+      fetch('https://mempool.space/api/v1/prices'),
+      fetch('https://mempool.space/api/blocks/tip/height'),
+      fetch('https://mempool.space/api/v1/fees/recommended')
+    ]);
+
+    const prices = await pricesRes.json();
+    const blockHeight = await blockRes.text();
+    const fees = await feesRes.json();
+
+    // Update ticker
+    document.getElementById('btc-usd').textContent = '$' + prices.USD.toLocaleString();
+    document.getElementById('btc-eur').textContent = '€' + prices.EUR.toLocaleString();
+    document.getElementById('btc-block').textContent = '#' + parseInt(blockHeight).toLocaleString();
+    document.getElementById('btc-fees').textContent = fees.fastestFee + ' sat/vB';
+
+    // Update widget prices
+    const widgetBtcUsd = document.querySelector('.btc-usd');
+    const widgetBtcXof = document.querySelector('.btc-xof');
+    if (widgetBtcUsd) widgetBtcUsd.textContent = `BTC: $${prices.USD.toLocaleString()}`;
+    if (widgetBtcXof) widgetBtcXof.textContent = `XOF: ${(prices.USD * 655).toLocaleString()}`;
+
+    // Save prices for transaction calculations
+    currentPrice.usd = prices.USD;
+    currentPrice.xof = prices.USD * 655;
+  } catch (error) {
+    console.error('Error fetching mempool data:', error);
+  }
 }
 
 function startAuth(tab) {
@@ -84,6 +107,14 @@ async function loadTranslations(lang) {
 async function setLang(lang) {
   sessionStorage.setItem('lang', lang);
   await loadTranslations(lang);
+  updateLangLabel(lang);
+}
+
+function updateLangLabel(lang) {
+  const langLabel = document.getElementById('langLabel');
+  if (langLabel) {
+    langLabel.textContent = lang.toUpperCase();
+  }
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -92,10 +123,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (langSelect) {
     langSelect.value = savedLang;
   }
+  updateLangLabel(savedLang);
   await loadTranslations(savedLang);
   calcBtc();
-  updateTicker();
-  initAfricaWidget();
+  fetchMempoolData();
+  setInterval(fetchMempoolData, 60000);
   initStepTooltips();
   initFeatTooltips();
 });
@@ -128,12 +160,14 @@ function initFeatTooltips() {
   if (!tooltip || !tooltipContent) return;
 
   document.querySelectorAll('.feat-card').forEach(card => {
-    card.addEventListener('mouseenter', () => {
+    card.addEventListener('mouseenter', (e) => {
       const tooltipId = card.dataset.tooltip;
       const template = document.getElementById('feat-tooltip-' + tooltipId);
       if (template) {
         tooltipContent.innerHTML = template.innerHTML;
         applyTranslationsToElement(tooltipContent);
+        tooltip.style.left = (e.clientX + 15) + 'px';
+        tooltip.style.top = (e.clientY + 15) + 'px';
         tooltip.classList.add('active');
       }
     });
@@ -144,112 +178,122 @@ function initFeatTooltips() {
   });
 }
 
-const fallbackTxData = [
-  { btc: '₿0.0042', xof: '28,450 XOF' },
-  { btc: '₿0.0015', xof: '10,150 XOF' },
-  { btc: '₿0.0081', xof: '54,900 XOF' },
-  { btc: '₿0.0028', xof: '18,920 XOF' },
-  { btc: '₿0.0055', xof: '37,250 XOF' },
-  { btc: '₿0.0011', xof: '7,450 XOF' }
+// === TRANSACTION FEED WIDGET ===
+const MEMPOOL_WS = 'wss://mempool.space/api/v1/ws';
+const COINGECKO_API = 'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd,xof';
+
+const wallets = [
+  { name: 'MTN MoMo', country: "Côte d'Ivoire", class: 'wallet-mtn', flag: '🇨🇮' },
+  { name: 'Moov Money', country: 'Burkina Faso', class: 'wallet-moov', flag: '🇧🇫' },
+  { name: 'Celtiis', country: 'Bénin', class: 'wallet-celtiis', flag: '🇧🇯' },
+  { name: 'Togocel', country: 'Togo', class: 'wallet-togocel', flag: '🇹🇬' }
 ];
 
-const fallbackPrice = 83200;
-const fallbackXOF = 675;
+let currentWalletIndex = 0;
+let currentPrice = { usd: 83000, xof: 54365000 }; // Fallback: USD/BTC and XOF/BTC
+let txCount = 0;
+const MAX_VISIBLE_TX = 6;
+let fallbackInterval = null; // Track fallback interval
 
-let coingeckoOk = false;
-let currentBtcPrice = fallbackPrice;
-let currentXOF = fallbackXOF;
-let txIndex = 0;
+function getNextWallet() {
+  const wallet = wallets[currentWalletIndex % wallets.length];
+  currentWalletIndex++;
+  return wallet;
+}
 
-function setStatus(dotId, ok, loading = false) {
-  const dot = document.getElementById(dotId);
-  if (!dot) return;
-  dot.classList.remove('green', 'red', 'yellow');
-  if (loading) {
-    dot.classList.add('yellow');
-  } else if (ok) {
-    dot.classList.add('green');
-  } else {
-    dot.classList.add('red');
+function connectMempool() {
+  const ws = new WebSocket(MEMPOOL_WS);
+  
+  ws.onopen = () => {
+    const statusEl = document.getElementById('connectionStatusHero');
+    if (statusEl) {
+      statusEl.textContent = 'Conectado • Mempool';
+      statusEl.style.color = '#22c55e';
+    }
+    ws.send(JSON.stringify({ action: 'subscribe', data: 'mempool' }));
+  };
+  
+  ws.onmessage = (event) => {
+    const data = JSON.parse(event.data);
+    if (data.txid && data.vout) {
+      const totalValue = data.vout.reduce((sum, out) => sum + (out.value || 0), 0);
+      addTransaction({ txid: data.txid, value: totalValue, fee: data.fee || 0 });
+    }
+  };
+  
+  ws.onerror = () => {
+    const statusEl = document.getElementById('connectionStatusHero');
+    if (statusEl) {
+      statusEl.textContent = 'Error de conexión • Usando datos simulados';
+      statusEl.style.color = '#f59e0b';
+    }
+    startFallbackMode();
+  };
+  
+  ws.onclose = () => {
+    const statusEl = document.getElementById('connectionStatusHero');
+    if (statusEl) {
+      statusEl.textContent = 'Desconectado';
+      statusEl.style.color = '#ef4444';
+    }
+    setTimeout(connectMempool, 5000);
+  };
+}
+
+function startFallbackMode() {
+  if (fallbackInterval) return;
+  fallbackInterval = setInterval(() => {
+    const simulatedTx = {
+      txid: Array(64).fill().map(() => Math.random().toString(36)[2]).join(''),
+      fee: Math.floor(Math.random() * 500) + 50,
+      value: Math.floor(Math.random() * 500000) + 10000
+    };
+    addTransaction(simulatedTx);
+  }, 10000);
+}
+
+function addTransaction(tx) {
+  const wallet = getNextWallet();
+  const sats = tx.value;
+  // Calculate XOF from sats: sats/100000000 * currentPrice.xof
+  const xofValue = Math.floor((sats / 100000000) * currentPrice.xof);
+  const hashShort = tx.txid.substring(0, 4) + '...' + tx.txid.substring(60);
+  
+  const txHtml = `
+    <div class="tx-item">
+      <div class="tx-connector"></div>
+      <div class="tx-dot ${wallet.class}">${wallet.flag}</div>
+      <div class="tx-content">
+        <div class="tx-wallet">
+          <span class="tx-wallet-name">${wallet.name}</span>
+          <span class="tx-country">${wallet.country}</span>
+        </div>
+        <div class="tx-amount">
+          <span class="tx-sats">${sats.toLocaleString()} sats</span>
+          <span class="tx-xof">~${xofValue.toLocaleString()} XOF</span>
+        </div>
+        <div class="tx-hash">${hashShort}</div>
+        <span class="tx-confirmed">✓ Confirmé</span>
+      </div>
+    </div>
+  `;
+  
+  const timeline = document.getElementById('txTimelineHero');
+  if (timeline) {
+    timeline.insertAdjacentHTML('afterbegin', txHtml);
+    
+    txCount++;
+    
+    const items = timeline.querySelectorAll('.tx-item');
+    if (items.length > MAX_VISIBLE_TX) {
+      items[items.length - 1].remove();
+    }
   }
 }
 
-function formatNumber(num) {
-  return num.toLocaleString('en-US', { maximumFractionDigits: 0 });
+function initTxFeed() {
+  startFallbackMode();
+  connectMempool();
 }
 
-function btcToXof(sats, price, xofRate) {
-  const btc = sats / 100000000;
-  const usd = btc * price;
-  const xof = usd * xofRate;
-  return formatNumber(Math.round(xof));
-}
-
-function satsToBtc(sats) {
-  return (sats / 100000000).toFixed(8);
-}
-
-function updateBubbles(txs) {
-  const bubbles = [
-    { amountId: 'tx-bubble-1', ...txs[0] },
-    { amountId: 'tx-bubble-2', ...txs[1] },
-    { amountId: 'tx-bubble-3', ...txs[2] }
-  ];
-  
-  bubbles.forEach(b => {
-    const el = document.getElementById(b.amountId);
-    if (!el) return;
-    const amtEl = el.querySelector('.tx-amount');
-    const xofEl = el.querySelector('.tx-xof');
-    if (amtEl) amtEl.textContent = b.btc;
-    if (xofEl) xofEl.textContent = b.xof;
-  });
-}
-
-function rotateBubbles(txs) {
-  txIndex = (txIndex + 3) % txs.length;
-  const selected = [txs[txIndex], txs[(txIndex + 1) % txs.length], txs[(txIndex + 2) % txs.length]];
-  updateBubbles(selected);
-}
-
-async function fetchCoingeckoData() {
-  try {
-    setStatus('coingecko-status', false, true);
-    const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_last_updated_at=true');
-    if (!res.ok) throw new Error('Coingecko error');
-    const data = await res.json();
-    currentBtcPrice = data.bitcoin.usd;
-    coingeckoOk = true;
-    setStatus('coingecko-status', true);
-    document.getElementById('btc-price').textContent = '$' + formatNumber(currentBtcPrice);
-    document.getElementById('btc-xof').textContent = formatNumber(Math.round(currentBtcPrice * currentXOF)) + ' XOF';
-    return true;
-  } catch (e) {
-    coingeckoOk = false;
-    setStatus('coingecko-status', false);
-    return false;
-  }
-}
-
-async function initAfricaWidget() {
-  document.getElementById('btc-price').textContent = '$' + formatNumber(fallbackPrice);
-  document.getElementById('btc-xof').textContent = formatNumber(fallbackPrice * fallbackXOF) + ' XOF';
-  
-  const ok = await fetchCoingeckoData();
-  if (!ok) {
-    currentBtcPrice = fallbackPrice;
-    currentXOF = fallbackXOF;
-  }
-  
-  let txs = fallbackTxData;
-  
-  updateBubbles(txs.slice(0, 3));
-  
-  setInterval(() => {
-    rotateBubbles(txIndex < txs.length - 3 ? txs : fallbackTxData);
-  }, 3000);
-  
-  const txCount = formatNumber(Math.floor(Math.random() * 5000) + 12000);
-  const countEl = document.getElementById('tx-count');
-  if (countEl) countEl.textContent = txCount;
-}
+document.addEventListener('DOMContentLoaded', initTxFeed);

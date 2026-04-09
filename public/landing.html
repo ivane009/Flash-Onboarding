@@ -11,14 +11,16 @@
 
 <nav>
   <a href="#" class="nav-logo">
-    <div class="nav-logo-icon">₿</div>
+    <img src="flash.png" alt="Flash" class="nav-logo-icon">
     <span class="nav-logo-text">Flash</span>
   </a>
   <ul class="nav-links">
-    <li><a href="#como-funciona" data-i18n="nav_how">How it works</a></li>
+    <li><a href="/blog.html" data-i18n="nav_blog">Blog</a></li>
     <li><a href="#features" data-i18n="nav_features">Benefits</a></li>
+    <li><a href="#como-funciona" data-i18n="nav_how">How it works</a></li>
     <li><a href="#faq" data-i18n="nav_faq">FAQ</a></li>
     <li>
+      <span class="lang-label" id="langLabel">ES</span>
       <select class="lang-select" onchange="setLang(this.value)">
         <option value="en">EN</option>
         <option value="fr">FR</option>
@@ -26,30 +28,32 @@
         <option value="pt">PT</option>
       </select>
     </li>
-    <li><a href="#" onclick="startAuth('login'); return false;" data-i18n="nav_login">Log in</a></li>
   </ul>
-  <button class="nav-cta" onclick="startAuth('register')" data-i18n="nav_cta">Create free account</button>
+  <div class="nav-auth">
+    <a href="#" class="nav-login" onclick="startAuth('login'); return false;" data-i18n="nav_login">Log in</a>
+    <button class="nav-cta" onclick="startAuth('register')" data-i18n="nav_cta">Create free account</button>
+  </div>
 </nav>
 
 <div class="ticker">
   <div class="ticker-item">
     <span class="ticker-name">BTC/USD</span>
-    <span class="ticker-price" id="btc-ticker">$83,200</span>
-    <span class="ticker-change up" id="btc-change">+1.24%</span>
+    <span class="ticker-price" id="btc-usd">$--</span>
+    <span class="ticker-change up" id="btc-usd-change">--</span>
   </div>
   <div class="ticker-item">
     <span class="ticker-name">BTC/EUR</span>
-    <span class="ticker-price">€76,420</span>
-    <span class="ticker-change up">+1.18%</span>
+    <span class="ticker-price" id="btc-eur">€--</span>
+    <span class="ticker-change up" id="btc-eur-change">--</span>
   </div>
   <div class="ticker-item">
     <span class="ticker-name">Bloque</span>
-    <span class="ticker-price">#893,412</span>
-    <span class="ticker-change" style="color:var(--muted)">confirmado</span>
+    <span class="ticker-price" id="btc-block">#--</span>
+    <span class="ticker-change ticker-confirmed">confirmado</span>
   </div>
   <div class="ticker-item">
     <span class="ticker-name">Mempool</span>
-    <span class="ticker-price">3.2 sat/vB</span>
+    <span class="ticker-price" id="btc-fees">-- sat/vB</span>
     <span class="ticker-change up">bajo</span>
   </div>
 </div>
@@ -73,98 +77,40 @@
     </div>
   </div>
   <div class="hero-right">
-    <div class="africa-widget">
-      <div class="widget-header">
-        <div class="widget-title">
-          <span class="widget-btc-icon">₿</span>
-          <span class="widget-live">LIVE</span>
+    <div class="tx-hero-widget">
+      <div class="tx-hero-header">
+        <div class="tx-live-badge">
+          <span class="live-dot"></span>
+          <span>Live</span>
         </div>
-        <div class="widget-stats">
-          <div class="stat-pill">
-            <span class="stat-label">BTC</span>
-            <span class="stat-value" id="btc-price">--</span>
+        <div class="tx-price-pills">
+          <span class="price-pill btc-usd">BTC: $--</span>
+          <span class="price-pill btc-xof">XOF: --</span>
+        </div>
+      </div>
+      <div class="wallet-carousel">
+        <div class="carousel-track">
+          <div class="wallet-slide">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBmfb6J4WHnxUiUhdWfb0o0I4ahrwsRnLKmw&s" alt="MTN MoMo" class="wallet-carousel-img">
+            <span class="wallet-slide-name">MTN MoMo</span>
           </div>
-          <div class="stat-pill">
-            <span class="stat-label">XOF</span>
-            <span class="stat-value" id="btc-xof">--</span>
+          <div class="wallet-slide">
+            <img src="data:image/png;base64,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" alt="Moov Money" class="wallet-carousel-img">
+            <span class="wallet-slide-name">Moov Money</span>
+          </div>
+          <div class="wallet-slide">
+            <div class="wallet-icon-fallback wallet-celtiis">🇧🇯</div>
+            <span class="wallet-slide-name">Celtiis</span>
+          </div>
+          <div class="wallet-slide">
+            <div class="wallet-icon-fallback wallet-togocel">🇹🇬</div>
+            <span class="wallet-slide-name">Togocel</span>
           </div>
         </div>
       </div>
-      
-      <div class="widget-status">
-        <span class="status-dot" id="coingecko-status"></span>
-        <span class="status-label">CoinGecko</span>
-        <span class="status-dot" id="mempool-status"></span>
-        <span class="status-label">Mempool</span>
-      </div>
-
-      <div class="widget-map-container">
-        <div class="map-wrapper">
-          <img src="https://imgv2-2-f.scribdassets.com/img/document/654824347/original/cceeabc285/1?v=1" alt="Africa Map" class="africa-map-img">
-          <svg class="map-overlay" viewBox="0 0 300 320" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <filter id="glow2">
-                <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
-                <feMerge>
-                  <feMergeNode in="coloredBlur"/>
-                  <feMergeNode in="SourceGraphic"/>
-                </feMerge>
-              </filter>
-            </defs>
-            
-            <g class="highlighted-countries" filter="url(#glow2)">
-              <ellipse cx="145" cy="175" rx="22" ry="18" fill="#67cbe1" opacity="0.75"/>
-              <ellipse cx="168" cy="152" rx="18" ry="14" fill="#67cbe1" opacity="0.75"/>
-              <ellipse cx="125" cy="185" rx="16" ry="13" fill="#67cbe1" opacity="0.75"/>
-              <ellipse cx="112" cy="165" rx="17" ry="14" fill="#67cbe1" opacity="0.75"/>
-            </g>
-            
-            <g class="dotted-lines">
-              <line x1="145" y1="175" x2="168" y2="152" stroke="#67cbe1" stroke-width="1.5" stroke-dasharray="3,3" opacity="0.8">
-                <animate attributeName="stroke-dashoffset" from="0" to="12" dur="0.8s" repeatCount="indefinite"/>
-              </line>
-              <line x1="145" y1="175" x2="125" y2="185" stroke="#67cbe1" stroke-width="1.5" stroke-dasharray="3,3" opacity="0.8">
-                <animate attributeName="stroke-dashoffset" from="0" to="12" dur="0.8s" repeatCount="indefinite"/>
-              </line>
-              <line x1="145" y1="175" x2="112" y2="165" stroke="#67cbe1" stroke-width="1.5" stroke-dasharray="3,3" opacity="0.8">
-                <animate attributeName="stroke-dashoffset" from="0" to="12" dur="0.8s" repeatCount="indefinite"/>
-              </line>
-            </g>
-            
-            <g class="country-labels" font-family="Inter, sans-serif" font-size="9" fill="#fff" font-weight="600">
-              <text x="168" y="155" text-anchor="middle">BF</text>
-              <text x="125" y="188" text-anchor="middle">TG</text>
-              <text x="112" y="168" text-anchor="middle">CI</text>
-              <text x="145" y="195" text-anchor="middle" font-size="8" fill="#67cbe1">FLASH</text>
-            </g>
-            
-            <g class="tx-bubbles">
-              <g class="tx-bubble tx-bubble-1">
-                <circle r="26" fill="rgba(103,203,225,0.3)" stroke="#67cbe1" stroke-width="1.5"/>
-                <text class="tx-amount" text-anchor="middle" dy="-4" fill="#fff" font-size="8" font-family="Inter, sans-serif">₿0.0042</text>
-                <text class="tx-xof" text-anchor="middle" dy="8" fill="#67cbe1" font-size="7" font-family="Inter, sans-serif">28,450 XOF</text>
-              </g>
-              <g class="tx-bubble tx-bubble-2">
-                <circle r="24" fill="rgba(103,203,225,0.3)" stroke="#67cbe1" stroke-width="1.5"/>
-                <text class="tx-amount" text-anchor="middle" dy="-4" fill="#fff" font-size="8" font-family="Inter, sans-serif">₿0.0015</text>
-                <text class="tx-xof" text-anchor="middle" dy="8" fill="#67cbe1" font-size="7" font-family="Inter, sans-serif">10,150 XOF</text>
-              </g>
-              <g class="tx-bubble tx-bubble-3">
-                <circle r="22" fill="rgba(103,203,225,0.3)" stroke="#67cbe1" stroke-width="1.5"/>
-                <text class="tx-amount" text-anchor="middle" dy="-4" fill="#fff" font-size="8" font-family="Inter, sans-serif">₿0.0081</text>
-                <text class="tx-xof" text-anchor="middle" dy="8" fill="#67cbe1" font-size="7" font-family="Inter, sans-serif">54,900 XOF</text>
-              </g>
-            </g>
-          </svg>
-        </div>
-      </div>
-      
-      <div class="widget-footer">
-        <div class="tx-counter">
-          <span class="tx-counter-label">Transactions today</span>
-          <span class="tx-counter-value" id="tx-count">--</span>
-        </div>
-        <div class="pulse-ring"></div>
+      <div class="tx-timeline" id="txTimelineHero"></div>
+      <div class="tx-feed-footer">
+        <span class="connection-status" id="connectionStatusHero">Conectando...</span>
       </div>
     </div>
   </div>
@@ -191,54 +137,8 @@
   </div>
 </div>
 
-<section class="section" id="features">
-  <div class="section-label" data-i18n="feat_section_label">Why Flash</div>
-  <h2 class="section-title" data-i18n="feat_title">Everything you need for Bitcoin</h2>
-  <div class="feat-grid">
-    <div class="feat-card" data-tooltip="1">
-      <div class="feat-header">
-        <div class="feat-icon-wrap">
-          <svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-        </div>
-        <h3 data-i18n="feat_instant_title">Instant via Lightning</h3>
-      </div>
-      <p data-i18n="feat_instant_desc">Receive your Bitcoin in seconds thanks to the Lightning network. No waiting for confirmations.</p>
-    </div>
-    <div class="feat-card" data-tooltip="2">
-      <div class="feat-header">
-        <div class="feat-icon-wrap">
-          <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-        </div>
-        <h3 data-i18n="feat_secure_title">Bank-level security</h3>
-      </div>
-      <p data-i18n="feat_secure_desc">KYC verification, end-to-end encryption and two-factor authentication included.</p>
-    </div>
-    <div class="feat-card" data-tooltip="3">
-      <div class="feat-header">
-        <div class="feat-icon-wrap">
-          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-        </div>
-        <h3 data-i18n="feat_borderless_title">Borderless</h3>
-      </div>
-      <p data-i18n="feat_borderless_desc">Available across Latin America and West Africa. Buy with your local currency.</p>
-    </div>
-    <div class="feat-card" data-tooltip="4">
-      <div class="feat-header">
-        <div class="feat-icon-wrap">
-          <svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
-        </div>
-        <h3 data-i18n="feat_mobile_title">Native mobile app</h3>
-      </div>
-      <p data-i18n="feat_mobile_desc">Manage your Bitcoin from iOS or Android with a clean, frictionless interface.</p>
-    </div>
-  </div>
-  <div class="feat-tooltip-center" id="featTooltip">
-    <div class="tooltip-content" id="featTooltipContent"></div>
-  </div>
-</section>
-
-<section class="section" id="como-funciona" style="padding-top:0;">
-  <div class="section-label">How it works</div>
+<section class="section" id="como-funciona">
+  <div class="section-label" data-i18n="how_section_label">How it works</div>
   <h2 class="section-title" data-i18n="steps_title">Get started with Flash in three (3) easy steps:</h2>
   <div class="steps-grid">
     <div class="step-item" data-tooltip="step1">
@@ -262,7 +162,137 @@
   </div>
 </section>
 
-<section class="section" id="faq" style="padding-top:0;">
+<div class="section-separator"></div>
+
+<section class="section" id="features">
+  <div class="section-label" data-i18n="feat_section_label">Pourquoi Flash</div>
+  <h2 class="section-title" data-i18n="feat_title">Tout ce qu'il faut pour Bitcoin</h2>
+  <div class="feat-grid-new">
+    <div class="feat-card-new">
+      <div class="feat-header-row">
+        <div class="feat-icon-sm">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        </div>
+        <div class="feat-title-inline">
+          <h3 data-i18n="feat_instant_title_new">Instantané via Lightning</h3>
+          <p data-i18n="feat_instant_desc_new">Recevez votre Bitcoin en secondes grâce au réseau Lightning. Pas d'attente pour les confirmations.</p>
+        </div>
+      </div>
+      <svg class="feat-chart" viewBox="0 0 260 100" xmlns="http://www.w3.org/2000/svg">
+        <rect x="5" y="68" width="12" height="28" rx="4" fill="#6B9FFF"/>
+        <rect x="19" y="76" width="7" height="20" rx="3" fill="#3B5BDB"/>
+        <rect x="29" y="56" width="12" height="40" rx="4" fill="#3B5BDB"/>
+        <rect x="43" y="66" width="7" height="30" rx="3" fill="#6B9FFF"/>
+        <rect x="53" y="44" width="12" height="52" rx="4" fill="#6B9FFF"/>
+        <rect x="67" y="54" width="7" height="42" rx="3" fill="#3B5BDB"/>
+        <rect x="77" y="32" width="12" height="64" rx="4" fill="#3B5BDB"/>
+        <rect x="91" y="46" width="7" height="50" rx="3" fill="#6B9FFF"/>
+        <rect x="101" y="20" width="12" height="76" rx="4" fill="#6B9FFF"/>
+        <rect x="115" y="34" width="7" height="62" rx="3" fill="#3B5BDB"/>
+        <rect x="125" y="12" width="12" height="84" rx="4" fill="#3B5BDB"/>
+        <rect x="139" y="26" width="7" height="70" rx="3" fill="#6B9FFF"/>
+        <rect x="149" y="4" width="12" height="92" rx="4" fill="#6B9FFF"/>
+        <rect x="163" y="16" width="7" height="80" rx="3" fill="#3B5BDB"/>
+        <rect x="173" y="8" width="12" height="88" rx="4" fill="#3B5BDB"/>
+        <rect x="187" y="20" width="7" height="76" rx="3" fill="#6B9FFF"/>
+        <rect x="197" y="14" width="12" height="82" rx="4" fill="#6B9FFF"/>
+        <rect x="211" y="26" width="7" height="70" rx="3" fill="#3B5BDB"/>
+        <rect x="221" y="18" width="12" height="78" rx="4" fill="#3B5BDB"/>
+        <rect x="235" y="30" width="7" height="66" rx="3" fill="#6B9FFF"/>
+      </svg>
+    </div>
+    <div class="feat-card-new">
+      <div class="feat-header-row">
+        <div class="feat-icon-sm">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <div class="feat-title-inline">
+          <h3 data-i18n="feat_available_title">Toujours disponible</h3>
+          <p data-i18n="feat_available_desc">Envoyez et recevez du Bitcoin à toute heure, tous les jours de l'année.</p>
+        </div>
+      </div>
+      <div class="feat-big-num">
+        <span data-i18n="feat_available_num">24/7</span>
+        <span class="badge" data-i18n="feat_available_badge">✓ sans interruption</span>
+      </div>
+      <div class="feat-sub" data-i18n="feat_available_sub">365 jours par an</div>
+    </div>
+    <div class="feat-card-new">
+      <div class="feat-header-row">
+        <div class="feat-icon-sm">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        </div>
+        <div class="feat-title-inline">
+          <h3 data-i18n="feat_fast_title">Ultra rapide</h3>
+          <p data-i18n="feat_fast_desc">Les transactions Lightning sont confirmées en quelques secondes, pas en heures.</p>
+        </div>
+      </div>
+      <div class="feat-big-num">
+        <span data-i18n="feat_fast_num">&lt; 3 sec</span>
+        <span class="badge" data-i18n="feat_fast_badge">⚡ via Lightning</span>
+      </div>
+      <div class="feat-sub" data-i18n="feat_fast_sub">temps moyen de confirmation</div>
+    </div>
+    <div class="feat-card-new">
+      <div class="feat-header-row">
+        <div class="feat-icon-sm">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+        </div>
+        <div class="feat-title-inline">
+          <h3 data-i18n="feat_mobile_title_new">Application mobile native</h3>
+          <p data-i18n="feat_mobile_desc_new">Gérez votre Bitcoin depuis iOS ou Android avec une interface propre et sans friction.</p>
+        </div>
+      </div>
+      <div class="feat-platforms">
+        <span data-i18n="feat_platforms">iOS & Android</span>
+        <span class="badge" data-i18n="feat_badge_natif">✓ natif</span>
+      </div>
+      <div class="feat-sub2" data-i18n="feat_mobile_sub">Interface sans friction</div>
+    </div>
+  </div>
+</section>
+
+<div class="section-separator"></div>
+
+<section class="section" id="wallets">
+  <h2 class="section-title" data-i18n="wallets_title">Les Wallets & Exchanges compatibles</h2>
+  <p class="wallets-sub">Flash fonctionne avec tous les wallets et services compatibles Lightning. Envoyez et recevez vos sats facilement, sans configuration complexe, depuis les applications que vous utilisez déjà.</p>
+  
+  <div class="text-center"><div class="wallets-category">WALLETS</div></div>
+  <div class="wallets-grid">
+    <div class="wallet-item"><a href="https://blink.sv" target="_blank" rel="noopener noreferrer"><img class="wallet-icon" src="https://www.google.com/s2/favicons?domain=blink.sv&sz=128" alt="Blink" onerror="this.classList.add('placeholder');this.src='';this.textContent='BL'"><span class="wallet-name">Blink</span></a></div>
+    <div class="wallet-item"><a href="https://walletofsatoshi.com" target="_blank" rel="noopener noreferrer"><img class="wallet-icon" src="https://www.google.com/s2/favicons?domain=walletofsatoshi.com&sz=128" alt="Wallet of Satoshi" onerror="this.classList.add('placeholder');this.src='';this.textContent='WoS'"><span class="wallet-name">Wallet of Satoshi</span></a></div>
+    <div class="wallet-item"><a href="https://machankura.com" target="_blank" rel="noopener noreferrer"><img class="wallet-icon" src="https://www.google.com/s2/favicons?domain=machankura.com&sz=128" alt="Machankura" onerror="this.classList.add('placeholder');this.src='';this.textContent='MC'"><span class="wallet-name">Machankura</span></a></div>
+    <div class="wallet-item"><a href="https://breez.technology" target="_blank" rel="noopener noreferrer"><img class="wallet-icon" src="https://www.google.com/s2/favicons?domain=breez.technology&sz=128" alt="Breez" onerror="this.classList.add('placeholder');this.src='';this.textContent='BR'"><span class="wallet-name">Breez</span></a></div>
+    <div class="wallet-item"><a href="https://bluewallet.io" target="_blank" rel="noopener noreferrer"><img class="wallet-icon" src="https://www.google.com/s2/favicons?domain=bluewallet.io&sz=128" alt="Blue Wallet" onerror="this.classList.add('placeholder');this.src='';this.textContent='BW'"><span class="wallet-name">Blue Wallet</span></a></div>
+    <div class="wallet-item"><a href="https://btcpayserver.org" target="_blank" rel="noopener noreferrer"><img class="wallet-icon" src="https://www.google.com/s2/favicons?domain=btcpayserver.org&sz=128" alt="BTCPay" onerror="this.classList.add('placeholder');this.src='';this.textContent='BTC'"><span class="wallet-name">BTCPay</span></a></div>
+    <div class="wallet-item"><a href="https://zeusln.app" target="_blank" rel="noopener noreferrer"><img class="wallet-icon" src="https://www.google.com/s2/favicons?domain=zeusln.app&sz=128" alt="Zeus" onerror="this.classList.add('placeholder');this.src='';this.textContent='ZE'"><span class="wallet-name">Zeus</span></a></div>
+    <div class="wallet-item"><a href="https://getalby.com" target="_blank" rel="noopener noreferrer"><img class="wallet-icon" src="https://www.google.com/s2/favicons?domain=getalby.com&sz=128" alt="Alby Go" onerror="this.classList.add('placeholder');this.src='';this.textContent='AL'"><span class="wallet-name">Alby Go</span></a></div>
+    <div class="wallet-item"><a href="https://phoenix.acinq.co" target="_blank" rel="noopener noreferrer"><img class="wallet-icon" src="https://www.google.com/s2/favicons?domain=phoenix.acinq.co&sz=128" alt="Phoenix" onerror="this.classList.add('placeholder');this.src='';this.textContent='PH'"><span class="wallet-name">Phoenix</span></a></div>
+    <div class="wallet-item"><a href="https://muun.com" target="_blank" rel="noopener noreferrer"><img class="wallet-icon" src="https://www.google.com/s2/favicons?domain=muun.com&sz=128" alt="Muun" onerror="this.classList.add('placeholder');this.src='';this.textContent='MU'"><span class="wallet-name">Muun</span></a></div>
+    <div class="wallet-item"><a href="https://strike.me" target="_blank" rel="noopener noreferrer"><img class="wallet-icon" src="https://www.google.com/s2/favicons?domain=strike.me&sz=128" alt="Strike" onerror="this.classList.add('placeholder');this.src='';this.textContent='ST'"><span class="wallet-name">Strike</span></a></div>
+    <div class="wallet-item"><a href="https://bullbitcoin.com" target="_blank" rel="noopener noreferrer"><img class="wallet-icon" src="https://www.google.com/s2/favicons?domain=bullbitcoin.com&sz=128" alt="Bull Bitcoin" onerror="this.classList.add('placeholder');this.src='';this.textContent='BB'"><span class="wallet-name">Bull Bitcoin</span></a></div>
+    <div class="wallet-item"><a href="https://blitz-wallet.com" target="_blank" rel="noopener noreferrer"><img class="wallet-icon" src="https://www.google.com/s2/favicons?domain=blitz-wallet.com&sz=128" alt="Blitz Wallet" onerror="this.classList.add('placeholder');this.src='';this.textContent='BL'"><span class="wallet-name">Blitz Wallet</span></a></div>
+    <div class="wallet-item"><a href="https://bitkit.to" target="_blank" rel="noopener noreferrer"><img class="wallet-icon" src="https://www.google.com/s2/favicons?domain=bitkit.to&sz=128" alt="BitKit" onerror="this.classList.add('placeholder');this.src='';this.textContent='BK'"><span class="wallet-name">BitKit</span></a></div>
+    <div class="wallet-item"><a href="https://aqua.net/" target="_blank" rel="noopener noreferrer"><img class="wallet-icon" src="https://www.google.com/s2/favicons?domain=aqua.net&sz=128" alt="Aqua Wallet" onerror="this.classList.add('placeholder');this.src='';this.textContent='AQ'"><span class="wallet-name">Aqua Wallet</span></a></div>
+  </div>
+
+  <div class="text-center"><div class="wallets-category">EXCHANGES</div></div>
+  <div class="wallets-grid">
+    <div class="wallet-item"><a href="https://bitnob.com" target="_blank" rel="noopener noreferrer"><img class="wallet-icon" src="https://bitnob.com/favicon.ico" alt="Bitnob" onerror="this.classList.add('placeholder');this.src='';this.textContent='BN'"><span class="wallet-name">Bitnob</span></a></div>
+    <div class="wallet-item"><a href="https://lnmarkets.com" target="_blank" rel="noopener noreferrer"><img class="wallet-icon" src="https://lnmarkets.com/favicon.ico" alt="LN Markets" onerror="this.classList.add('placeholder');this.src='';this.textContent='LNM'"><span class="wallet-name">LN Markets</span></a></div>
+    <div class="wallet-item"><a href="https://binance.com" target="_blank" rel="noopener noreferrer"><img class="wallet-icon" src="https://bin.bnbstatic.com/static/images/common/favicon.ico" alt="Binance" onerror="this.classList.add('placeholder');this.src='';this.textContent='BI'"><span class="wallet-name">Binance</span></a></div>
+    <div class="wallet-item"><a href="https://coinbase.com" target="_blank" rel="noopener noreferrer"><img class="wallet-icon" src="https://www.coinbase.com/favicon.ico" alt="Coinbase" onerror="this.classList.add('placeholder');this.src='';this.textContent='CB'"><span class="wallet-name">Coinbase</span></a></div>
+    <div class="wallet-item"><a href="https://bitfinex.com" target="_blank" rel="noopener noreferrer"><img class="wallet-icon" src="/img/bitfinex.png" alt="Bitfinex" onerror="this.classList.add('placeholder');this.src='';this.textContent='BF'"><span class="wallet-name">Bitfinex</span></a></div>
+    <div class="wallet-item"><a href="https://kucoin.com" target="_blank" rel="noopener noreferrer"><img class="wallet-icon" src="/img/kucoin.png" alt="Kucoin" onerror="this.classList.add('placeholder');this.src='';this.textContent='KC'"><span class="wallet-name">Kucoin</span></a></div>
+    <div class="wallet-item"><a href="https://okx.com" target="_blank" rel="noopener noreferrer"><img class="wallet-icon" src="https://www.okx.com/favicon.ico" alt="OKX" onerror="this.classList.add('placeholder');this.src='';this.textContent='OK'"><span class="wallet-name">OKX</span></a></div>
+    <div class="wallet-item"><a href="https://bitget.com" target="_blank" rel="noopener noreferrer"><img class="wallet-icon" src="https://www.bitget.com/favicon.ico" alt="Bitget" onerror="this.classList.add('placeholder');this.src='';this.textContent='BG'"><span class="wallet-name">Bitget</span></a></div>
+  </div>
+</section>
+
+<div class="section-separator"></div>
+
+<section class="section" id="faq">
   <div class="section-label">Dudas</div>
   <h2 class="section-title" data-i18n="faq_title">Frequently asked questions</h2>
   <div class="faq-list">
@@ -305,11 +335,10 @@
   </div>
 </div>
 
-<div class="tooltip-templates" style="display:none;">
+<div class="tooltip-templates">
   <div id="tooltip-step1">
     <div class="preview-card">
       <div class="preview-header">
-        <div class="preview-logo">₿</div>
         <span class="preview-title">Flash</span>
       </div>
       <div class="preview-field">
@@ -342,7 +371,6 @@
   <div id="tooltip-step2">
     <div class="preview-card">
       <div class="preview-header">
-        <div class="preview-logo">₿</div>
         <span class="preview-title">Flash</span>
       </div>
       <p class="preview-invite" data-i18n="tooltip2_welcome">¡Bienvenido de vuelta!</p>
@@ -360,7 +388,6 @@
   <div id="tooltip-step3">
     <div class="preview-card">
       <div class="preview-header">
-        <div class="preview-logo">₿</div>
         <span class="preview-title">Flash</span>
       </div>
       <h2 class="preview-sats-title" data-i18n="step3_buysats">Buy Sats</h2>
@@ -393,7 +420,7 @@
   </div>
 </div>
 
-<div class="feat-tooltip-templates" style="display:none;">
+<div class="feat-tooltip-templates">
   <div id="feat-tooltip-1">
     <div class="preview-card">
       <h3 data-i18n="feat1_title">Lightning Network</h3>
@@ -420,18 +447,58 @@
   </div>
 </div>
 
-<footer>
-  <div class="nav-logo" style="text-decoration:none;">
-    <div class="nav-logo-icon">₿</div>
-    <span class="nav-logo-text">Flash</span>
+<div class="section-separator"></div>
+
+<footer class="premium-footer">
+  <div class="footer-watermark">FLASH</div>
+  <div class="footer-content">
+    <div class="footer-brand">
+      <img src="https://paywithflash.com/wp-content/uploads/2025/03/flash_logo_off.png" alt="Flash" class="footer-logo">
+      <p class="footer-tagline" data-i18n="footer_tagline">La manera más simple de guardar<br>valor con Bitcoin en África.</p>
+      <div class="footer-badges">
+        <span class="badge" data-i18n="footer_badge_secure">🔒 Seguro & cifrado</span>
+        <span class="badge" data-i18n="footer_badge_lightning">⚡ Lightning Network</span>
+      </div>
+    </div>
+
+    <div class="footer-col">
+      <h4 class="footer-heading" data-i18n="footer_product">Producto</h4>
+      <ul class="footer-links">
+        <li><a href="#benefits" data-i18n="footer_benefits">Beneficios</a></li>
+        <li><a href="#como-funciona" data-i18n="footer_how">Cómo funciona</a></li>
+        <li><a href="#faq" data-i18n="footer_faq">FAQ</a></li>
+        <li><a href="#blog" data-i18n="footer_blog">Blog</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-col">
+      <h4 class="footer-heading" data-i18n="footer_company">Compañía</h4>
+      <ul class="footer-links">
+        <li><a href="#about" data-i18n="footer_about">A propos</a></li>
+        <li><a href="#faqs" data-i18n="footer_faqs">Faqs</a></li>
+        <li><a href="#privacy" data-i18n="footer_privacy">Politique de confidentialité</a></li>
+        <li><a href="#terms" data-i18n="footer_terms">Conditions d'utilisation</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-col">
+      <h4 class="footer-heading" data-i18n="footer_follow">Síguenos</h4>
+      <div class="social-icons">
+        <a href="https://x.com/btcflashxyz" target="_blank" rel="noopener noreferrer" class="social-icon">𝕏</a>
+        <a href="https://www.linkedin.com/company/bitcoinflashxyz" target="_blank" rel="noopener noreferrer" class="social-icon">in</a>
+        <a href="https://www.facebook.com/bitcoinflashxyz" target="_blank" rel="noopener noreferrer" class="social-icon">f</a>
+        <a href="https://t.me/bitcoinflashxyz" target="_blank" rel="noopener noreferrer" class="social-icon">✈</a>
+        <a href="https://whatsapp.com/channel/0029VbAh0Nm3mFY5HS6CQc34" target="_blank" rel="noopener noreferrer" class="social-icon">w</a>
+      </div>
+    </div>
   </div>
-  <ul class="footer-links">
-    <li><a href="#" data-i18n="footer_terms">Terms</a></li>
-    <li><a href="#" data-i18n="footer_privacy">Privacy</a></li>
-    <li><a href="#" data-i18n="footer_support">Support</a></li>
-    <li><a href="#" data-i18n="footer_blog">Blog</a></li>
-  </ul>
-  <span class="footer-copy" data-i18n="footer_copy">© 2026 Flash. All rights reserved.</span>
+
+  <div class="footer-separator"></div>
+
+  <div class="footer-bottom">
+    <span data-i18n="footer_copyright">© 2025 Flash. Tous droits réservés.</span>
+    <span data-i18n="footer_made_for">Hecho con ⚡ para África</span>
+  </div>
 </footer>
 
 <script src="/landing.js"></script>

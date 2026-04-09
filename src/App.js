@@ -1,7 +1,6 @@
 import i18next from 'i18next';
 import { countries } from 'countries-list';
-
-const API_BASE = 'https://staging.bitcoinflash.xyz/api/v1';
+import { sanitizeText } from './utils/security';
 
 const state = {
   step: 0, totalSteps: 6, userId: null, jwtToken: null,
@@ -30,6 +29,7 @@ async function initI18n() {
 }
 
 const t = (key) => i18next.t(key);
+const esc = (str) => typeof str === 'string' ? sanitizeText(str) : str;
 
 /* ══════════════════════════════════════════════
    DATOS ESTÁTICOS
@@ -39,12 +39,6 @@ const providers = [
   { id: 'moov',    name: 'Moov Money', emoji: '🔵', countries: 'Bénin, Togo' },
   { id: 'celtiis', name: 'Celtiis',    emoji: '🟢', countries: 'Bénin' },
   { id: 'togocel', name: 'Togocel',    emoji: '🔴', countries: 'Togo' },
-];
-
-const countryCodes = [
-  { code: 'BJ', flag: '🇧🇯', dial: '+229' },
-  { code: 'TG', flag: '🇹🇬', dial: '+228' },
-  { code: 'CI', flag: '🇨🇮', dial: '+225' },
 ];
 
 const operatorColors = {
@@ -87,7 +81,6 @@ const welcomeCarouselImages = [
 ];
 
 let currentCarouselIndex = {};
-let currentWelcomeCarouselIndex = 0;
 
 function showOperatorPopup(id) {
   const provider = providers.find(p => p.id === id);
@@ -194,17 +187,6 @@ function setLang(code, flag, name, el) {
 /* ══════════════════════════════════════════════
    API
 ══════════════════════════════════════════════ */
-async function apiPost(endpoint, body, useAuth = false) {
-  const headers = { 'Content-Type': 'application/json' };
-  if (useAuth && state.jwtToken) headers['Authorization'] = `Bearer ${state.jwtToken}`;
-  const res = await fetch(`${API_BASE}${endpoint}`, {
-    method: 'POST', headers, body: JSON.stringify(body)
-  });
-  const data = await res.json();
-  if (!res.ok) throw { status: res.status, data };
-  return data;
-}
-
 /* ══════════════════════════════════════════════
    TOAST
 ══════════════════════════════════════════════ */
@@ -214,40 +196,6 @@ function showToast(msg, type = 'error') {
   el.className = `toast ${type}`;
   clearTimeout(window._tt);
   window._tt = setTimeout(() => { el.className = 'toast hidden'; }, 4000);
-}
-
-/* ══════════════════════════════════════════════
-   ENHANCED STEPPER COMPONENT
-══════════════════════════════════════════════ */
-function renderStepper() {
-  const steps = [
-    { num: 1, label: t('step1_label') || t('step1') },
-    { num: 2, label: t('step2_label') || t('step2') },
-    { num: 3, label: t('step3_label') || t('step3') },
-    { num: 4, label: t('step4_label') || t('step4') }
-  ];
-  const currentStep = state.step;
-  
-  return `
-    <div class="stepper-container">
-      <div class="stepper-track">
-        ${steps.map((step, idx) => {
-          const isDone = currentStep > step.num;
-          const isActive = currentStep === step.num;
-          const isUpcoming = currentStep < step.num;
-          return `
-            <div class="stepper-item ${isDone ? 'done' : ''} ${isActive ? 'active' : ''} ${isUpcoming ? 'upcoming' : ''}">
-              <div class="stepper-circle">
-                ${isDone ? '<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7L5.5 10.5L12 3.5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>' : step.num}
-              </div>
-              <div class="stepper-label">${step.label}</div>
-            </div>
-            ${idx < steps.length - 1 ? `<div class="stepper-line ${isDone ? 'done' : ''}"></div>` : ''}
-          `;
-        }).join('')}
-      </div>
-    </div>
-  `;
 }
 
 /* ══════════════════════════════════════════════
@@ -263,6 +211,7 @@ function renderStep() {
     case 3: card.innerHTML = renderWallet();      break;
     case 4: card.innerHTML = renderTransaction(); break;
     case 5: card.innerHTML = renderSuccess();     break;
+    default: card.innerHTML = ''; break;
   }
   if (state.step === 0 || state.step === 1) initPwStrength();
   if (state.step === 2) initOTPInputs();
@@ -375,12 +324,9 @@ function renderRegister() {
 }
 
 function buildRegisterForm() {
-  const ccOptions = countryCodes.map(c =>
-    `<option value="${c.code}" ${state.form.country === c.code ? 'selected' : ''}>${c.flag} ${c.dial}</option>`
-  ).join('');
   const parts = state.form.name.split(' ');
-  const fn = parts[0] || '';
-  const ln = parts.slice(1).join(' ') || '';
+  const fn = esc(parts[0] || '');
+  const ln = esc(parts.slice(1).join(' ') || '');
   return `
     <div class="form-row">
       <div class="form-group">
@@ -394,7 +340,7 @@ function buildRegisterForm() {
     </div>
     <div class="form-group">
       <label>${t('label_email')} <span class="required">*</span></label>
-      <input id="f-email" type="email" placeholder="kofi@example.com" value="${state.form.email}"/>
+      <input id="f-email" type="email" placeholder="kofi@example.com" value="${esc(state.form.email)}"/>
     </div>
 
    <div class="form-group">
@@ -412,7 +358,7 @@ function buildRegisterForm() {
             <ul class="country-list" id="countryList"></ul>
           </div>
         </div>
-        <input id="f-whatsapp" type="tel" placeholder="97 00 00 00" value="${state.form.whatsapp}"/>
+        <input id="f-whatsapp" type="tel" placeholder="97 00 00 00" value="${esc(state.form.whatsapp)}"/>
       </div>
 </div>
 
@@ -556,7 +502,7 @@ function renderOTP() {
   return `
   <div class="card">
     <h2>${t('h2_otp')}</h2>
-    <p class="subtitle">${t('otp_sub')} <strong style="color:var(--text)">${state.form.email}</strong></p>
+    <p class="subtitle">${t('otp_sub')} <strong style="color:var(--text)">${esc(state.form.email)}</strong></p>
     <div class="info-box">${t('otp_info')}</div>
     <div class="otp-wrap" id="otpWrap">
       <input class="otp-input" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]"/>
@@ -592,7 +538,7 @@ function renderWallet() {
     ${selected ? `
       <div class="form-group">
         <label>${selected.name}</label>
-        <input id="f-mmPhone" type="tel" placeholder="+229 97 00 00 00" value="${state.form.mobileMoneyPhone}"/>
+        <input id="f-mmPhone" type="tel" placeholder="+229 97 00 00 00" value="${esc(state.form.mobileMoneyPhone)}"/>
         <div class="input-hint">✅ ${t('mm_hint')}</div>
       </div>` : ''}
     <button class="btn btn-primary" onclick="validateWallet()">${t('btn_continue')}</button>
@@ -621,7 +567,7 @@ function renderTransaction() {
     <div class="form-group">
       <label>${isBuy ? t('pays') : t('sends')} (${isBuy ? 'XOF' : 'SATS'})</label>
       <div class="amount-input-wrap">
-        <input id="f-amount" type="number" value="${state.form.amount}"
+        <input id="f-amount" type="number" value="${esc(state.form.amount)}"
           oninput="updateAmount(this.value)" placeholder="${isBuy ? '5000' : '1000'}"/>
         <span class="currency-badge">${isBuy ? 'XOF' : 'SATS'}</span>
       </div>
@@ -665,7 +611,7 @@ function renderSuccess() {
       <div class="success-icon">✓</div>
       <h2 style="text-align:center">${t('success_h2')}</h2>
       <p class="subtitle" style="text-align:center;margin-bottom:18px;">
-        <strong style="color:var(--text)">${state.form.name || 'Usuario'}</strong>, ${t('success_sub')}
+        <strong style="color:var(--text)">${esc(state.form.name) || 'Usuario'}</strong>, ${t('success_sub')}
       </p>
       <div class="stats-grid">
         <div class="stat-box"><div class="stat-number">⚡</div><div class="stat-label">Lightning</div></div>
