@@ -587,10 +587,10 @@ nav {
 
 #como-funciona-wrapper {
   display: flex;
-  max-width: 1500px;
+  max-width: 2000px;
   margin: 0 auto;
   padding: 0 0.5rem;
-  gap: 40px;
+  gap: 30px;
   align-items: flex-start;
 }
 
@@ -615,9 +615,9 @@ nav {
 }
 
 #content-panel {
-  width: 58%;
+  width: 300%;
   background: #13131f;
-  padding: 50px 50px 50px 40px;
+  padding: 50px 30px 50px 40px;
 }
 
 .intro-section {
@@ -656,6 +656,20 @@ nav {
 
 .step-card:hover {
   background: rgba(77, 217, 192, 0.03);
+}
+
+.step-card .step-body {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 24px;
+}
+
+.step-icon {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  flex-shrink: 0;
 }
 
 .step-card .step-body h3 {
