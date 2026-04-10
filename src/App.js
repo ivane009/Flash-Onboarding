@@ -1,10 +1,11 @@
 import i18next from 'i18next';
 import { countries } from 'countries-list';
-import { sanitizeText } from './utils/security';
+
+const API_BASE = 'https://staging.bitcoinflash.xyz/api/v1';
 
 const state = {
   step: 0, totalSteps: 6, userId: null, jwtToken: null,
-  lang: sessionStorage.getItem('lang') || 'fr', formTab: 'register',
+  lang: 'es',
   form: {
     name: '', email: '', password: '', whatsapp: '',
     country: 'BJ', provider: '', mobileMoneyPhone: '',
@@ -29,7 +30,6 @@ async function initI18n() {
 }
 
 const t = (key) => i18next.t(key);
-const esc = (str) => typeof str === 'string' ? sanitizeText(str) : str;
 
 /* ══════════════════════════════════════════════
    DATOS ESTÁTICOS
@@ -41,123 +41,11 @@ const providers = [
   { id: 'togocel', name: 'Togocel',    emoji: '🔴', countries: 'Togo' },
 ];
 
-const operatorColors = {
-  mtn:     { bg: '#FFEB3B', color: '#333' },
-  moov:    { bg: '#2196F3', color: '#fff' },
-  celtiis: { bg: '#4CAF50', color: '#fff' },
-  togocel: { bg: '#F44336', color: '#fff' },
-};
-
-const operatorImages = {
-  mtn: [
-    'https://www.mastercard.com/news/media/zh5euxog/serigne-dioum-group-ceo-mtn-fintech-and-amnah-ajmal-executive-vice-president-market-development-eemea-at-mastercard.jpg',
-    'https://eu-images.contentstack.com/v3/assets/blta47798dd33129a0c/bltd2644456b687c90e/68b6d3c547d0e167b4aed181/MTN_Fintech_CEO_Francis_Matseketsa_and_MTN_South_Sudan_CEO_Mapula_Bodibe_(1)_(1).jpg',
-    'https://pbs.twimg.com/media/Dm4_sA3WwAA6lyA.jpg'
-  ],
-  moov: [
-    'https://play-lh.googleusercontent.com/LSbvPMeHFokNEckuBuy60MVehvXrNGc4AFL-h2RQ2G6SHuM5j_PjYjy2VrXWMPj9L8s=w526-h296-rw',
-    'https://mir-s3-cdn-cf.behance.net/project_modules/max_632_webp/77f5c9180801537.651157f807bc5.jpg',
-    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTL-EkKDAy96Q6GSqBgFP4_rarCPLzvGN6hZQ&s'
-  ],
-  celtiis: [
-    'https://www.afro-impact.com/wp-content/uploads/2022/10/celtiis-benin-lancement-offre-services.jpg',
-    'https://celtiis.bj/_next/image?url=%2FSLIDER-FEDELITE.jpg&w=3840&q=75',
-    'https://celtiis.bj/celtiis-cash.jpg'
-  ],
-  togocel: [
-    'https://storage.goantifraud.com//images/news/7ffbe460ddcd1bf7b90d6d4f814ae1bb.jpg'
-  ],
-};
-
-const operatorLogos = {
-  mtn: 'https://i.pinimg.com/236x/f2/f9/38/f2f9385a59cf088b7b77472f3636d4fb.jpg',
-  moov: 'https://fastly.mwm-storage.mwmcdn.com/raw_files/175607d1-b6ed-4ee2-a2c5-a9900ad0c6bc',
-  celtiis: 'https://media.licdn.com/dms/image/v2/D4E0BAQHtTO1iuxkoyA/company-logo_200_200/company-logo_200_200/0/1666366806951?e=2147483647&v=beta&t=rN6388-_wF5DRFfh7RZkcvWAlK-XwJ-mRE2KAD7tb4U',
-  togocel: 'https://cdn.bitrefill.com/content/cn/b_rgb%3A217f1c%2Cc_pad%2Ch_800%2Cw_800/v1647309884/togocel-togo.webp',
-};
-
-const welcomeCarouselImages = [
-  'https://www.shutterstock.com/image-illustration/abstract-dark-neon-background-bitcoin-600nw-1887117790.jpg'
+const countryCodes = [
+  { code: 'BJ', flag: '🇧🇯', dial: '+229' },
+  { code: 'TG', flag: '🇹🇬', dial: '+228' },
+  { code: 'CI', flag: '🇨🇮', dial: '+225' },
 ];
-
-let currentCarouselIndex = {};
-
-function showOperatorPopup(id) {
-  const provider = providers.find(p => p.id === id);
-  const colors = operatorColors[id];
-  const images = operatorImages[id] || [];
-  currentCarouselIndex[id] = 0;
-  const popup = document.getElementById('operatorPopup');
-  const body = document.getElementById('operatorPopupBody');
-  
-  let carouselHtml = '';
-  if (images.length > 0) {
-    carouselHtml = `
-      <div class="operator-carousel" id="operatorCarousel">
-        <div class="carousel-track" id="carouselTrack">
-          ${images.map((img, i) => `<img src="${img}" class="carousel-img ${i === 0 ? 'active' : ''}" alt="${provider.name}" loading="lazy"/>`).join('')}
-        </div>
-        ${images.length > 1 ? `
-          <button class="carousel-btn carousel-prev" onclick="moveCarousel('${id}', -1)">&#8249;</button>
-          <button class="carousel-btn carousel-next" onclick="moveCarousel('${id}', 1)">&#8250;</button>
-          <div class="carousel-dots">
-            ${images.map((_, i) => `<span class="carousel-dot ${i === 0 ? 'active' : ''}" onclick="goToCarousel('${id}', ${i})"></span>`).join('')}
-          </div>
-        ` : ''}
-      </div>
-    `;
-  }
-  
-  const logo = operatorLogos[id];
-  const imgContent = logo 
-    ? `<img src="${logo}" class="operator-logo" alt="${provider.name}"/>`
-    : `<span style="font-size:36px;">${provider.emoji}</span>`;
-  
-  body.innerHTML = `
-    <div class="operator-popup-img" style="${logo ? 'background:none;padding:0;' : `background:${colors.bg};color:${colors.color};`}">
-      ${imgContent}
-    </div>
-    <div class="operator-popup-name">${provider.name}</div>
-    <div class="operator-popup-countries">${provider.countries}</div>
-    ${carouselHtml}
-  `;
-  popup.classList.remove('hidden');
-}
-
-function moveCarousel(id, direction) {
-  const images = operatorImages[id] || [];
-  if (images.length === 0) return;
-  currentCarouselIndex[id] = (currentCarouselIndex[id] + direction + images.length) % images.length;
-  updateCarousel(id);
-}
-
-function goToCarousel(id, index) {
-  const images = operatorImages[id] || [];
-  if (images.length === 0) return;
-  currentCarouselIndex[id] = index;
-  updateCarousel(id);
-}
-
-function updateCarousel(id) {
-  const track = document.getElementById('carouselTrack');
-  const dots = document.querySelectorAll('.carousel-dot');
-  const imgs = track.querySelectorAll('.carousel-img');
-  const idx = currentCarouselIndex[id];
-  imgs.forEach((img, i) => img.classList.toggle('active', i === idx));
-  dots.forEach((dot, i) => dot.classList.toggle('active', i === idx));
-}
-
-function hideOperatorPopup() {
-  document.getElementById('operatorPopup').classList.add('hidden');
-}
-
-document.addEventListener('click', e => {
-  if (e.target.id === 'operatorPopup') hideOperatorPopup();
-});
-window.showOperatorPopup = showOperatorPopup;
-window.hideOperatorPopup = hideOperatorPopup;
-window.moveCarousel = moveCarousel;
-window.goToCarousel = goToCarousel;
 
 /* ══════════════════════════════════════════════
    SELECTOR DE IDIOMA
@@ -187,6 +75,17 @@ function setLang(code, flag, name, el) {
 /* ══════════════════════════════════════════════
    API
 ══════════════════════════════════════════════ */
+async function apiPost(endpoint, body, useAuth = false) {
+  const headers = { 'Content-Type': 'application/json' };
+  if (useAuth && state.jwtToken) headers['Authorization'] = `Bearer ${state.jwtToken}`;
+  const res = await fetch(`${API_BASE}${endpoint}`, {
+    method: 'POST', headers, body: JSON.stringify(body)
+  });
+  const data = await res.json();
+  if (!res.ok) throw { status: res.status, data };
+  return data;
+}
+
 /* ══════════════════════════════════════════════
    TOAST
 ══════════════════════════════════════════════ */
@@ -196,6 +95,40 @@ function showToast(msg, type = 'error') {
   el.className = `toast ${type}`;
   clearTimeout(window._tt);
   window._tt = setTimeout(() => { el.className = 'toast hidden'; }, 4000);
+}
+
+/* ══════════════════════════════════════════════
+   ENHANCED STEPPER COMPONENT
+══════════════════════════════════════════════ */
+function renderStepper() {
+  const steps = [
+    { num: 1, label: t('step1_label') || t('step1') },
+    { num: 2, label: t('step2_label') || t('step2') },
+    { num: 3, label: t('step3_label') || t('step3') },
+    { num: 4, label: t('step4_label') || t('step4') }
+  ];
+  const currentStep = state.step;
+  
+  return `
+    <div class="stepper-container">
+      <div class="stepper-track">
+        ${steps.map((step, idx) => {
+          const isDone = currentStep > step.num;
+          const isActive = currentStep === step.num;
+          const isUpcoming = currentStep < step.num;
+          return `
+            <div class="stepper-item ${isDone ? 'done' : ''} ${isActive ? 'active' : ''} ${isUpcoming ? 'upcoming' : ''}">
+              <div class="stepper-circle">
+                ${isDone ? '<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7L5.5 10.5L12 3.5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>' : step.num}
+              </div>
+              <div class="stepper-label">${step.label}</div>
+            </div>
+            ${idx < steps.length - 1 ? `<div class="stepper-line ${isDone ? 'done' : ''}"></div>` : ''}
+          `;
+        }).join('')}
+      </div>
+    </div>
+  `;
 }
 
 /* ══════════════════════════════════════════════
@@ -211,101 +144,78 @@ function renderStep() {
     case 3: card.innerHTML = renderWallet();      break;
     case 4: card.innerHTML = renderTransaction(); break;
     case 5: card.innerHTML = renderSuccess();     break;
-    default: card.innerHTML = ''; break;
   }
   if (state.step === 0 || state.step === 1) initPwStrength();
   if (state.step === 2) initOTPInputs();
-  updateProgress();
 }
 
 /* ══════════════════════════════════════════════
    PASO 0 — WELCOME
 ══════════════════════════════════════════════ */
-function renderLanding() {
-  return `
-    <div class="welcome-layout">
-      <div class="welcome-left">
-          <div class="welcome-logo">
-            <img class="logo-icon" src="https://bitcoinflash.xyz/logo.png" alt="Flash"/>
-          </div>
-        <h1>${t('welcome_h1')}</h1>
-        <p class="subtitle">${t('welcome_sub')}</p>
-        <div class="welcome-carousel" id="welcomeCarousel">
-          <div class="welcome-carousel-track" id="welcomeCarouselTrack">
-            ${welcomeCarouselImages.map((img, i) => `<img src="${img}" class="welcome-carousel-img ${i === 0 ? 'active' : ''}" alt="Welcome"/>`).join('')}
-          </div>
-        </div>
-        <div class="providers-label">${t('welcome_works')}</div>
-        <div class="providers-row">
-          <button class="provider-pill" onclick="showOperatorPopup('mtn')">🟡 MTN MoMo</button>
-          <button class="provider-pill" onclick="showOperatorPopup('moov')">🔵 Moov</button>
-          <button class="provider-pill" onclick="showOperatorPopup('celtiis')">🟢 Celtiis</button>
-          <button class="provider-pill" onclick="showOperatorPopup('togocel')">🔴 Togocel</button>
-        </div>
-      </div>
-      <div class="welcome-right landing-right">
-        <div class="landing-hero-text">
-          <h2>${t('landing_h2')}</h2>
-          <p>${t('landing_sub')}</p>
-        </div>
-        <div class="landing-cta">
-          <button class="btn btn-primary btn-lg" onclick="startAuth('register')">⚡ ${t('btn_register')}</button>
-          <button class="btn btn-secondary btn-lg" onclick="startAuth('login')">${t('tab_login')}</button>
-        </div>
-        <div class="landing-features">
-          <div class="landing-feature">
-            <span class="feature-icon">⚡</span>
-            <span>${t('feat_fast')}</span>
-          </div>
-          <div class="landing-feature">
-            <span class="feature-icon">🔒</span>
-            <span>${t('feat_secure')}</span>
-          </div>
-          <div class="landing-feature">
-            <span class="feature-icon">💰</span>
-            <span>${t('feat_cheap')}</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  `;
-}
-
-window.startAuth = function(tab) {
-  state.formTab = tab;
-  state.step = 1;
-  renderStep();
-};
-
 function renderWelcome() {
-  if (state.step === 0) {
-    return renderLanding();
-  }
   return `
     <div class="welcome-layout">
       <div class="welcome-left">
-          <div class="welcome-logo">
-            <img class="logo-icon" src="https://bitcoinflash.xyz/logo.png" alt="Flash"/>
-          </div>
+        <div class="welcome-logo">
+          <div class="logo-icon">⚡</div>
+          <span>Flash</span>
+        </div>
         <h1>${t('welcome_h1')}</h1>
         <p class="subtitle">${t('welcome_sub')}</p>
-        <div class="welcome-carousel" id="welcomeCarousel">
-          <div class="welcome-carousel-track" id="welcomeCarouselTrack">
-            ${welcomeCarouselImages.map((img, i) => `<img src="${img}" class="welcome-carousel-img ${i === 0 ? 'active' : ''}" alt="Welcome"/>`).join('')}
-          </div>
+        <div class="stats-row">
+          <div class="stat-pill"><div class="stat-pill-num">500+</div><div class="stat-pill-label">${t('welcome_users')}</div></div>
+          <div class="stat-pill"><div class="stat-pill-num">&lt;5s</div><div class="stat-pill-label">${t('welcome_tx')}</div></div>
+          <div class="stat-pill"><div class="stat-pill-num">2%</div><div class="stat-pill-label">${t('welcome_fee')}</div></div>
         </div>
         <div class="providers-label">${t('welcome_works')}</div>
         <div class="providers-row">
-          <button class="provider-pill" onclick="showOperatorPopup('mtn')">🟡 MTN MoMo</button>
-          <button class="provider-pill" onclick="showOperatorPopup('moov')">🔵 Moov</button>
-          <button class="provider-pill" onclick="showOperatorPopup('celtiis')">🟢 Celtiis</button>
-          <button class="provider-pill" onclick="showOperatorPopup('togocel')">🔴 Togocel</button>
+          <div class="provider-pill">🟡 MTN MoMo</div>
+          <div class="provider-pill">🔵 Moov</div>
+          <div class="provider-pill">🟢 Celtiis</div>
+          <div class="provider-pill">🔴 Togocel</div>
+        </div>
+        <div class="testimonial">
+          <div class="testimonial-track">
+            <div class="testimonial-item">
+              <div class="testimonial-stars">★★★★★</div>
+              <p class="testimonial-text">"Envié sats a mi familia en Togo en menos de 10 segundos. Increíble."</p>
+              <div class="testimonial-author">
+                <div class="testimonial-avatar">👤</div>
+                <div>
+                  <div class="testimonial-name">Koffi A.</div>
+                  <div class="testimonial-loc">Cotonou, Benín</div>
+                </div>
+              </div>
+            </div>
+            <div class="testimonial-item">
+              <div class="testimonial-stars">★★★★★</div>
+              <p class="testimonial-text">"Con Flash puedo cobrar mis ventas en Bitcoin al instante. Sin complicaciones."</p>
+              <div class="testimonial-author">
+                <div class="testimonial-avatar">👤</div>
+                <div>
+                  <div class="testimonial-name">Aminata D.</div>
+                  <div class="testimonial-loc">Lomé, Togo</div>
+                </div>
+              </div>
+            </div>
+            <div class="testimonial-item">
+              <div class="testimonial-stars">★★★★★</div>
+              <p class="testimonial-text">"La mejor app para recibir dinero desde Europa sin perder en comisiones."</p>
+              <div class="testimonial-author">
+                <div class="testimonial-avatar">👤</div>
+                <div>
+                  <div class="testimonial-name">Jean-Paul M.</div>
+                  <div class="testimonial-loc">Abidján, Côte d'Ivoire</div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       <div class="welcome-right">
         <h2>${t('welcome_h2')}</h2>
         <p class="sub">${t('welcome_sub2')}</p>
-        ${buildAuthForm()}
+        ${buildRegisterForm()}
       </div>
     </div>
   `;
@@ -317,34 +227,39 @@ function renderWelcome() {
 function renderRegister() {
   return `
   <div class="card">
+    ${renderStepper()}
+    <div class="step-tag">${t('step1')}</div>
     <h2>${t('h2_account')}</h2>
     <p class="subtitle">${t('subtitle_account')}</p>
-    ${buildAuthForm()}
+    ${buildRegisterForm()}
   </div>`;
 }
 
 function buildRegisterForm() {
+  const ccOptions = countryCodes.map(c =>
+    `<option value="${c.code}" ${state.form.country === c.code ? 'selected' : ''}>${c.flag} ${c.dial}</option>`
+  ).join('');
   const parts = state.form.name.split(' ');
-  const fn = esc(parts[0] || '');
-  const ln = esc(parts.slice(1).join(' ') || '');
+  const fn = parts[0] || '';
+  const ln = parts.slice(1).join(' ') || '';
   return `
     <div class="form-row">
       <div class="form-group">
-        <label>${t('label_name')} <span class="required">*</span></label>
+        <label>${t('label_name')}</label>
         <input id="f-firstname" type="text" placeholder="Kofi" value="${fn}"/>
       </div>
       <div class="form-group">
-        <label>${t('label_lastname')} <span class="required">*</span></label>
+        <label>${t('label_lastname')}</label>
         <input id="f-lastname" type="text" placeholder="Mensah" value="${ln}"/>
       </div>
     </div>
     <div class="form-group">
-      <label>${t('label_email')} <span class="required">*</span></label>
-      <input id="f-email" type="email" placeholder="kofi@example.com" value="${esc(state.form.email)}"/>
+      <label>${t('label_email')}</label>
+      <input id="f-email" type="email" placeholder="kofi@example.com" value="${state.form.email}"/>
     </div>
 
    <div class="form-group">
-    <label>${t('label_phone')} <span class="required">*</span></label>
+    <label>${t('label_phone')}</label>
       <div class="phone-row">
         <div class="country-selector" id="countrySelector" onclick="toggleCountryDropdown()">
           <span id="selectedFlag">🇧🇯</span>
@@ -358,15 +273,15 @@ function buildRegisterForm() {
             <ul class="country-list" id="countryList"></ul>
           </div>
         </div>
-        <input id="f-whatsapp" type="tel" placeholder="97 00 00 00" value="${esc(state.form.whatsapp)}"/>
+        <input id="f-whatsapp" type="tel" placeholder="97 00 00 00" value="${state.form.whatsapp}"/>
       </div>
 </div>
 
     <div class="form-group">
-      <label>${t('label_pass')} <span class="required">*</span></label>
+      <label>${t('label_pass')}</label>
       <div class="password-wrap">
         <input id="f-password" type="password" placeholder="${t('pass_placeholder')}" value="${state.form.password}" oninput="updatePwStrength(this.value)"/>
-        <button class="toggle-pw" onclick="togglePw('f-password',this)" type="button"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+        <button class="toggle-pw" onclick="togglePw('f-password',this)" type="button">👁️</button>
       </div>
       <div class="pw-strength-bar">
         <div class="pw-seg" id="ps1"></div><div class="pw-seg" id="ps2"></div>
@@ -375,10 +290,10 @@ function buildRegisterForm() {
       <div class="pw-label" id="pwLabel"></div>
     </div>
     <div class="form-group">
-      <label>${t('label_pass2')} <span class="required">*</span></label>
+      <label>${t('label_pass2')}</label>
       <div class="password-wrap">
         <input id="f-password2" type="password" placeholder="${t('pass2_placeholder')}"/>
-        <button class="toggle-pw" onclick="togglePw('f-password2',this)" type="button"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+        <button class="toggle-pw" onclick="togglePw('f-password2',this)" type="button">👁️</button>
       </div>
     </div>
     <button class="btn btn-primary" id="btnRegister" onclick="doRegister()">${t('btn_register')}</button>
@@ -386,45 +301,10 @@ function buildRegisterForm() {
       <span class="trust-item">${t('trust1')}</span>
       <span class="trust-item">${t('trust2')}</span>
       <span class="trust-item">${t('trust3')}</span>
+    </div>
+    <div class="login-link">
+      ${t('login_link')} <a onclick="showToast(t('toast_login_soon'),'success')">${t('login_connect')}</a>
     </div>`;
-}
-
-function buildLoginForm() {
-  return `
-    <div class="form-group">
-      <label>${t('label_email')} <span class="required">*</span></label>
-      <input id="f-login-email" type="email" placeholder="kofi@example.com"/>
-    </div>
-    <div class="form-group">
-      <label>${t('label_pass')} <span class="required">*</span></label>
-      <div class="password-wrap">
-        <input id="f-login-password" type="password" placeholder="${t('pass_placeholder')}"/>
-        <button class="toggle-pw" onclick="togglePw('f-login-password',this)" type="button"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
-      </div>
-    </div>
-    <button class="btn btn-primary" id="btnLogin" onclick="doLogin()">${t('btn_login')}</button>
-    <div class="login-hint">
-      <span>${t('forgot_password') || '¿Olvidaste tu contraseña?'}</span>
-    </div>`;
-}
-
-window.toggleFormTab = function(tab) {
-  state.formTab = tab;
-  renderWelcome();
-};
-
-function buildAuthForm() {
-  return `
-    <div class="form-tabs">
-      <button class="form-tab ${state.formTab === 'register' ? 'active' : ''}" onclick="toggleFormTab('register')">
-        ${t('tab_create_account')}
-      </button>
-      <button class="form-tab ${state.formTab === 'login' ? 'active' : ''}" onclick="toggleFormTab('login')">
-        ${t('tab_login')}
-      </button>
-    </div>
-    ${state.formTab === 'register' ? buildRegisterForm() : buildLoginForm()}
-  `;
 }
 
 
@@ -501,8 +381,10 @@ document.addEventListener('click', e => {
 function renderOTP() {
   return `
   <div class="card">
+    ${renderStepper()}
+    <div class="step-tag">${t('step2')}</div>
     <h2>${t('h2_otp')}</h2>
-    <p class="subtitle">${t('otp_sub')} <strong style="color:var(--text)">${esc(state.form.email)}</strong></p>
+    <p class="subtitle">${t('otp_sub')} <strong style="color:var(--text)">${state.form.email}</strong></p>
     <div class="info-box">${t('otp_info')}</div>
     <div class="otp-wrap" id="otpWrap">
       <input class="otp-input" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]"/>
@@ -525,6 +407,8 @@ function renderWallet() {
   const selected = providers.find(p => p.id === state.form.provider);
   return `
   <div class="card">
+    ${renderStepper()}
+    <div class="step-tag">${t('step3')}</div>
     <h2>${t('h2_wallet')}</h2>
     <p class="subtitle">${t('wallet_sub')}</p>
     <div class="provider-grid">
@@ -538,7 +422,7 @@ function renderWallet() {
     ${selected ? `
       <div class="form-group">
         <label>${selected.name}</label>
-        <input id="f-mmPhone" type="tel" placeholder="+229 97 00 00 00" value="${esc(state.form.mobileMoneyPhone)}"/>
+        <input id="f-mmPhone" type="tel" placeholder="+229 97 00 00 00" value="${state.form.mobileMoneyPhone}"/>
         <div class="input-hint">✅ ${t('mm_hint')}</div>
       </div>` : ''}
     <button class="btn btn-primary" onclick="validateWallet()">${t('btn_continue')}</button>
@@ -558,6 +442,8 @@ function renderTransaction() {
   const total = isBuy ? amount + fee : amount - fee;
   return `
   <div class="card">
+    ${renderStepper()}
+    <div class="step-tag">${t('step4')}</div>
     <h2>${t('h2_tx')}</h2>
     <p class="subtitle">${t('tx_sub')}</p>
     <div class="action-tabs">
@@ -567,7 +453,7 @@ function renderTransaction() {
     <div class="form-group">
       <label>${isBuy ? t('pays') : t('sends')} (${isBuy ? 'XOF' : 'SATS'})</label>
       <div class="amount-input-wrap">
-        <input id="f-amount" type="number" value="${esc(state.form.amount)}"
+        <input id="f-amount" type="number" value="${state.form.amount}"
           oninput="updateAmount(this.value)" placeholder="${isBuy ? '5000' : '1000'}"/>
         <span class="currency-badge">${isBuy ? 'XOF' : 'SATS'}</span>
       </div>
@@ -611,7 +497,7 @@ function renderSuccess() {
       <div class="success-icon">✓</div>
       <h2 style="text-align:center">${t('success_h2')}</h2>
       <p class="subtitle" style="text-align:center;margin-bottom:18px;">
-        <strong style="color:var(--text)">${esc(state.form.name) || 'Usuario'}</strong>, ${t('success_sub')}
+        <strong style="color:var(--text)">${state.form.name || 'Usuario'}</strong>, ${t('success_sub')}
       </p>
       <div class="stats-grid">
         <div class="stat-box"><div class="stat-number">⚡</div><div class="stat-label">Lightning</div></div>
@@ -700,37 +586,18 @@ function getOTPValue() {
 /* ══════════════════════════════════════════════
    LLAMADAS A LA API
 ══════════════════════════════════════════════ */
-function validateEmail(email) {
-  const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return re.test(email);
-}
-
 async function doRegister() {
-  clearFormErrors();
-  const first       = document.getElementById('f-firstname')?.value.trim();
-  const last        = document.getElementById('f-lastname')?.value.trim();
-  const email       = document.getElementById('f-email')?.value.trim();
-  const pass        = document.getElementById('f-password')?.value;
-  const pass2       = document.getElementById('f-password2')?.value;
-  const country     = state.form.country;
-  const dialCode    = allCountries.find(c => c.code === country)?.dial || '';
-  const whatsappRaw = document.getElementById('f-whatsapp')?.value.trim();
-  const whatsapp    = dialCode + whatsappRaw;
-
-  const fieldLabels = { firstname: t('label_name'), lastname: t('label_lastname'), email: t('label_email'), whatsapp: t('label_phone'), password: t('label_pass'), password2: t('label_pass2') };
-
-  if (!first)           { showFieldError('f-firstname'); showToast(fieldLabels.firstname + ': ' + t('toast_field_required')); return; }
-  if (!last)            { showFieldError('f-lastname'); showToast(fieldLabels.lastname + ': ' + t('toast_field_required')); return; }
-  const nameRegex = /^[a-zA-Z\sáéíóúÁÉÍÓÚñÑ]+$/;
-  if (!nameRegex.test(first)) { showFieldError('f-firstname'); showToast(t('toast_name_invalid')); return; }
-  if (!nameRegex.test(last)) { showFieldError('f-lastname'); showToast(t('toast_lastname_invalid')); return; }
-  if (!email)           { showFieldError('f-email'); showToast(fieldLabels.email + ': ' + t('toast_field_required')); return; }
-  if (!validateEmail(email)) { showFieldError('f-email'); showToast(t('toast_email_invalid')); return; }
-  if (!whatsappRaw)     { showFieldError('f-whatsapp'); showToast(fieldLabels.whatsapp + ': ' + t('toast_field_required')); return; }
-  if (!pass)            { showFieldError('f-password'); showToast(fieldLabels.password + ': ' + t('toast_field_required')); return; }
-  if (pass.length < 8)  { showFieldError('f-password'); showToast(t('toast_pw_short')); return; }
-  if (!pass2)           { showFieldError('f-password2'); showToast(fieldLabels.password2 + ': ' + t('toast_field_required')); return; }
-  if (pass !== pass2)   { showFieldError('f-password2'); showToast(t('toast_pw_match')); return; }
+  const first    = document.getElementById('f-firstname')?.value.trim();
+  const last     = document.getElementById('f-lastname')?.value.trim();
+  const email    = document.getElementById('f-email')?.value.trim();
+  const pass     = document.getElementById('f-password')?.value;
+  const pass2    = document.getElementById('f-password2')?.value;
+  const country  = state.form.country;
+  const dialCode = allCountries.find(c => c.code === country)?.dial || '';
+  const whatsapp = dialCode + document.getElementById('f-whatsapp')?.value.trim();
+   
+  if (pass.length < 8)  { showToast(t('toast_pw_short')); return; }
+    if (pass !== pass2)   { showToast(t('toast_pw_match')); return; }
 
   const btn = document.getElementById('btnRegister');
   if (btn) { btn.textContent = t('btn_creating'); btn.disabled = true; }
@@ -760,21 +627,7 @@ async function doVerifyOTP() {
 }
 
 async function doLogin() {
-  clearFormErrors();
-  const email = document.getElementById('f-login-email')?.value.trim();
-  const pass = document.getElementById('f-login-password')?.value;
-
-  if (!email) { showFieldError('f-login-email'); showToast(t('label_email') + ': ' + t('toast_field_required')); return; }
-  if (!pass) { showFieldError('f-login-password'); showToast(t('label_pass') + ': ' + t('toast_field_required')); return; }
-
-  const btn = document.getElementById('btnLogin');
-  if (btn) { btn.textContent = t('btn_logging_in'); btn.disabled = true; }
-
-  await new Promise(r => setTimeout(r, 800));
-
-  showToast(t('toast_logged_in'), 'success');
-  state.step = 2;
-  renderStep();
+  // No se usa en modo demo
 }
 
 async function doResendOTP() {
@@ -787,50 +640,8 @@ async function doResendOTP() {
 ══════════════════════════════════════════════ */
 function togglePw(id, btn) {
   const el = document.getElementById(id);
-  if (el.type === 'password') {
-    el.type = 'text';
-    btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
-  } else {
-    el.type = 'password';
-    btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
-  }
-}
-
-function showFieldError(inputId) {
-  const input = document.getElementById(inputId);
-  if (!input) return;
-  input.classList.add('input-error');
-  const wrap = input.closest('.password-wrap') || input.closest('.phone-row');
-  if (wrap) {
-    const icon = document.createElement('span');
-    icon.className = 'input-error-icon';
-    icon.textContent = '⚠️';
-    wrap.style.position = 'relative';
-    wrap.appendChild(icon);
-  } else {
-    input.style.position = 'relative';
-    const icon = document.createElement('span');
-    icon.className = 'input-error-icon';
-    icon.textContent = '⚠️';
-    icon.style.position = 'absolute';
-    icon.style.right = '10px';
-    icon.style.top = '50%';
-    icon.style.transform = 'translateY(-50%)';
-    input.parentElement.style.position = 'relative';
-    input.parentElement.appendChild(icon);
-  }
-  input.addEventListener('input', function removeErr() {
-    input.classList.remove('input-error');
-    const parent = input.closest('.password-wrap') || input.closest('.phone-row') || input.parentElement;
-    const icon = parent?.querySelector('.input-error-icon');
-    if (icon) icon.remove();
-    input.removeEventListener('input', removeErr);
-  }, { once: true });
-}
-
-function clearFormErrors() {
-  document.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
-  document.querySelectorAll('.input-error-icon').forEach(el => el.remove());
+  if (el.type === 'password') { el.type = 'text';     btn.textContent = '🙈'; }
+  else                        { el.type = 'password'; btn.textContent = '👁️'; }
 }
 
 function selectProvider(id) { state.form.provider = id; renderStep(); }
@@ -889,17 +700,7 @@ function nextStep() {
 }
 
 function prevStep() {
-  if (state.step > 0) {
-    if (state.step === 1) {
-      state.form = {
-        name: '', email: '', password: '', whatsapp: '',
-        country: 'BJ', provider: '', mobileMoneyPhone: '',
-        action: 'buy', amount: '5000'
-      };
-    }
-    state.step--; 
-    renderStep(); 
-  }
+  if (state.step > 0) { state.step--; renderStep(); }
 }
 
 function showLoading() {
@@ -920,119 +721,23 @@ function hideLoading() {
 }
 
 /* ══════════════════════════════════════════════
-   EXPOSE GLOBALS FOR INLINE HANDLERS
-   ═════════════════════════════════════════════ */
-window.toggleLang     = toggleLang;
-window.setLang        = setLang;
-window.toggleCountryDropdown = toggleCountryDropdown;
-window.filterCountries = filterCountries;
-window.selectCountry  = selectCountry;
-window.togglePw       = togglePw;
-window.updatePwStrength = updatePwStrength;
-window.doRegister     = doRegister;
-window.doVerifyOTP    = doVerifyOTP;
-window.doResendOTP    = doResendOTP;
-window.doLogin        = doLogin;
-window.selectProvider = selectProvider;
-window.setAction      = setAction;
-window.updateAmount   = updateAmount;
-window.validateWallet = validateWallet;
-window.executeTransaction = executeTransaction;
-window.goToDashboard  = goToDashboard;
-window.restart        = restart;
-window.nextStep       = nextStep;
-window.prevStep       = prevStep;
-window.showToast      = showToast;
-
-/* ══════════════════════════════════════════════
    INIT
-   ═════════════════════════════════════════════ */
+═════════════════════════════════════════════ */
 function initDOM() {
   const root = document.getElementById('root');
   root.innerHTML = `
-    <div class="app">
-      <div class="progress-wrap" id="progressWrap" style="display:none">
-        <div class="progress-header">
-          <div class="progress-steps">
-            <div class="step-item">
-              <div class="step-dot upcoming" id="dot1">1</div>
-              <div class="step-label" id="label1">Cuenta</div>
-            </div>
-            <div class="step-line" id="line1"></div>
-            <div class="step-item">
-              <div class="step-dot upcoming" id="dot2">2</div>
-              <div class="step-label" id="label2">Verificar</div>
-            </div>
-            <div class="step-line" id="line2"></div>
-            <div class="step-item">
-              <div class="step-dot upcoming" id="dot3">3</div>
-              <div class="step-label" id="label3">Wallet</div>
-            </div>
-            <div class="step-line" id="line3"></div>
-            <div class="step-item">
-              <div class="step-dot upcoming" id="dot4">4</div>
-              <div class="step-label" id="label4">Transacci&oacute;n</div>
-            </div>
-          </div>
-          <div class="header-right">
-            <div class="lang-btn" id="langBtn" onclick="toggleLang()">
-              <span id="langFlag">ES</span>
-              <span id="langName">Español</span>
-              <span>▾</span>
-            </div>
-            <div class="lang-dropdown" id="langDropdown">
-              <div class="lang-option active" onclick="setLang('es','ES','Español',this)">ES Español</div>
-              <div class="lang-option" onclick="setLang('fr','FR','Français',this)">FR Français</div>
-              <div class="lang-option" onclick="setLang('en','EN','English',this)">EN English</div>
-              <div class="lang-option" onclick="setLang('pt','PT','Português',this)">PT Português</div>
-            </div>
-          </div>
-        </div>
+    <div class="top-bar">
+      <div class="top-bar-logo">
+        <div class="logo-icon">⚡</div>
+        <span>Flash</span>
       </div>
-      <main>
-        <div id="stepCard"></div>
-      </main>
     </div>
+    <main>
+      <div id="stepCard"></div>
+    </main>
     <div id="toast" class="toast hidden"></div>
   `;
 }
 
-function updateProgress() {
-  const wrap = document.getElementById('progressWrap');
-  wrap.style.display = 'block';
-  const step = state.step;
-  for (let i = 1; i <= 4; i++) {
-    const dot = document.getElementById('dot' + i);
-    const line = document.getElementById('line' + i);
-    const item = dot ? dot.parentElement : null;
-    if (step === 0) {
-      dot.className = 'step-dot upcoming';
-      if (line) line.className = 'step-line';
-      if (item) item.className = 'step-item';
-    } else if (i < step) {
-      dot.className = 'step-dot done';
-      if (line) line.className = 'step-line done';
-      if (item) item.className = 'step-item done';
-    } else if (i === step) {
-      dot.className = 'step-dot active';
-      if (line) line.className = 'step-line';
-      if (item) item.className = 'step-item active';
-    } else {
-      dot.className = 'step-dot upcoming';
-      if (line) line.className = 'step-line';
-      if (item) item.className = 'step-item';
-    }
-  }
-}
-
 initDOM();
-initI18n().then(() => {
-  if (sessionStorage.getItem('showAuth') === 'true') {
-    state.step = 1;
-    state.formTab = sessionStorage.getItem('authTab') || 'register';
-    sessionStorage.removeItem('showAuth');
-    sessionStorage.removeItem('authTab');
-  }
-  renderStep();
-  updateProgress();
-});
+initI18n().then(() => renderStep());

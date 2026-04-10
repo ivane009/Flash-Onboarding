@@ -4,36 +4,16 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta name="theme-color" content="#1a1a2e"/>
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://*.coingecko.com https://*.pinterest.com https://*.google.com https://*.behance.net; connect-src 'self' https://api.coingecko.com; frame-ancestors 'none';">
-    <meta http-equiv="X-Content-Type-Options" content="nosniff">
-    <meta http-equiv="X-Frame-Options" content="DENY">
-    <meta http-equiv="X-XSS-Protection" content="1; mode=block">
-    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
     <title>Flash — Onboarding</title>
-    <link rel="icon" href="%PUBLIC_URL%/flash.png"/>
-    <link rel="apple-touch-icon" href="%PUBLIC_URL%/flash.png"/>
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico"/>
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png"/>
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json"/>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
   </head>
   <body>
-    <script>
-      (function() {
-        const showAuth = sessionStorage.getItem('showAuth');
-        const isLanding = window.location.pathname.endsWith('landing.html');
-        if (!showAuth && !isLanding) {
-          window.location.href = '/landing.html';
-        }
-      })();
-    </script>
-
+    <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
-    <div id="operatorPopup" class="operator-popup hidden">
-      <div class="operator-popup-content">
-        <button class="operator-popup-close" onclick="hideOperatorPopup()">&times;</button>
-        <div id="operatorPopupBody"></div>
-      </div>
-    </div>
   </body>
 </html>
