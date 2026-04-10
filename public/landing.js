@@ -127,31 +127,85 @@ document.addEventListener('DOMContentLoaded', async () => {
   await loadTranslations(savedLang);
   calcBtc();
   fetchMempoolData();
-  setInterval(fetchMempoolData, 60000);
-  initStepTooltips();
+  setInterval(fetchMempoolData, 120000);
   initFeatTooltips();
+  initComoFuncionaScroll();
+  
+  const carouselTrack = document.querySelector('.carousel-track');
+  if (carouselTrack) {
+    const images = carouselTrack.querySelectorAll('img');
+    let loadedCount = 0;
+    if (images.length === 0) {
+      carouselTrack.classList.add('loaded');
+    } else {
+      images.forEach(img => {
+        if (img.complete) {
+          loadedCount++;
+        } else {
+          img.addEventListener('load', () => {
+            loadedCount++;
+            if (loadedCount >= images.length) {
+              carouselTrack.classList.add('loaded');
+            }
+          });
+          img.addEventListener('error', () => {
+            loadedCount++;
+            if (loadedCount >= images.length) {
+              carouselTrack.classList.add('loaded');
+            }
+          });
+        }
+      });
+    }
+  }
 });
 
-function initStepTooltips() {
-  const tooltip = document.getElementById('stepTooltip');
-  const tooltipContent = document.getElementById('tooltipContent');
-  if (!tooltip || !tooltipContent) return;
+function initComoFuncionaScroll() {
+  const wrapper = document.getElementById('como-funciona-wrapper');
+  const pathProgress = document.getElementById('path-progress');
+  if (!wrapper || !pathProgress) return;
 
-  document.querySelectorAll('.step-item').forEach(item => {
-    item.addEventListener('mouseenter', () => {
-      const tooltipId = item.dataset.tooltip;
-      const template = document.getElementById('tooltip-' + tooltipId);
-      if (template) {
-        tooltipContent.innerHTML = template.innerHTML;
-        applyTranslationsToElement(tooltipContent);
-        tooltip.classList.add('active');
+  const pathLength = pathProgress.getTotalLength();
+  pathProgress.style.strokeDasharray = pathLength;
+  pathProgress.style.strokeDashoffset = pathLength;
+
+  const stepCircles = document.querySelectorAll('#map-svg circle');
+  const stepCards = document.querySelectorAll('.steps-section .step-card');
+  
+  const pathSegments = [
+    { end: 0.15 },    // Step 1 - reaches first circle
+    { end: 0.35 },    // Step 2 - reaches second circle
+    { end: 0.6 },     // Step 3 - reaches third circle
+    { end: 1 }        // Step 4 - reaches fourth circle
+  ];
+
+  const observerOptions = {
+    root: null,
+    rootMargin: '-40% 0px -40% 0px',
+    threshold: 0
+  };
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const index = Array.from(stepCards).indexOf(entry.target);
+        if (index >= 0 && index < pathSegments.length) {
+          const progress = pathSegments[index].end;
+          const offset = pathLength * (1 - progress);
+          pathProgress.style.strokeDashoffset = offset;
+          
+          stepCircles.forEach((circle, i) => {
+            if (i <= index) {
+              circle.setAttribute('fill', '#4dd9c0');
+              circle.setAttribute('r', i === index ? '10' : '8');
+            }
+          });
+        }
       }
     });
+  }, observerOptions);
 
-    item.addEventListener('mouseleave', () => {
-      tooltip.classList.remove('active');
-    });
-  });
+  stepCards.forEach(card => observer.observe(card));
 }
 
 function initFeatTooltips() {
@@ -159,20 +213,25 @@ function initFeatTooltips() {
   const tooltipContent = document.getElementById('featTooltipContent');
   if (!tooltip || !tooltipContent) return;
 
+  let tooltipTimeout;
   document.querySelectorAll('.feat-card').forEach(card => {
     card.addEventListener('mouseenter', (e) => {
-      const tooltipId = card.dataset.tooltip;
-      const template = document.getElementById('feat-tooltip-' + tooltipId);
-      if (template) {
-        tooltipContent.innerHTML = template.innerHTML;
-        applyTranslationsToElement(tooltipContent);
-        tooltip.style.left = (e.clientX + 15) + 'px';
-        tooltip.style.top = (e.clientY + 15) + 'px';
-        tooltip.classList.add('active');
-      }
+      clearTimeout(tooltipTimeout);
+      tooltipTimeout = setTimeout(() => {
+        const tooltipId = card.dataset.tooltip;
+        const template = document.getElementById('feat-tooltip-' + tooltipId);
+        if (template) {
+          tooltipContent.innerHTML = template.innerHTML;
+          applyTranslationsToElement(tooltipContent);
+          tooltip.style.left = (e.clientX + 15) + 'px';
+          tooltip.style.top = (e.clientY + 15) + 'px';
+          tooltip.classList.add('active');
+        }
+      }, 150);
     });
 
     card.addEventListener('mouseleave', () => {
+      clearTimeout(tooltipTimeout);
       tooltip.classList.remove('active');
     });
   });
@@ -183,17 +242,21 @@ const MEMPOOL_WS = 'wss://mempool.space/api/v1/ws';
 const COINGECKO_API = 'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd,xof';
 
 const wallets = [
-  { name: 'MTN MoMo', country: "Côte d'Ivoire", class: 'wallet-mtn', flag: '🇨🇮' },
-  { name: 'Moov Money', country: 'Burkina Faso', class: 'wallet-moov', flag: '🇧🇫' },
-  { name: 'Celtiis', country: 'Bénin', class: 'wallet-celtiis', flag: '🇧🇯' },
-  { name: 'Togocel', country: 'Togo', class: 'wallet-togocel', flag: '🇹🇬' }
+  { name: 'MTN MoMo', country: "Côte d'Ivoire", class: 'wallet-mtn', emoji: '🇨🇮' },
+  { name: 'Moov Money', country: 'Burkina Faso', class: 'wallet-moov', emoji: '🇧🇫' },
+  { name: 'Celtiis', country: 'Bénin', class: 'wallet-celtiis', emoji: '🇧🇯' },
+  { name: 'Togocel', country: 'Togo', class: 'wallet-togocel', emoji: '🇹🇬' }
 ];
 
 let currentWalletIndex = 0;
 let currentPrice = { usd: 83000, xof: 54365000 }; // Fallback: USD/BTC and XOF/BTC
 let txCount = 0;
-const MAX_VISIBLE_TX = 6;
-let fallbackInterval = null; // Track fallback interval
+const MAX_VISIBLE_TX = 3;
+let fallbackInterval = null;
+let mempoolWs = null;
+let reconnectAttempts = 0;
+const MAX_RECONNECT_ATTEMPTS = 5;
+let isPageVisible = true;
 
 function getNextWallet() {
   const wallet = wallets[currentWalletIndex % wallets.length];
@@ -201,55 +264,83 @@ function getNextWallet() {
   return wallet;
 }
 
+function disconnectMempool() {
+  if (mempoolWs) {
+    mempoolWs.close();
+    mempoolWs = null;
+  }
+  reconnectAttempts = 0;
+}
+
 function connectMempool() {
-  const ws = new WebSocket(MEMPOOL_WS);
+  if (!isPageVisible || mempoolWs) return;
+  if (reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) return;
   
-  ws.onopen = () => {
+  mempoolWs = new WebSocket(MEMPOOL_WS);
+  
+  mempoolWs.onopen = () => {
+    reconnectAttempts = 0;
     const statusEl = document.getElementById('connectionStatusHero');
     if (statusEl) {
       statusEl.textContent = 'Conectado • Mempool';
       statusEl.style.color = '#22c55e';
     }
-    ws.send(JSON.stringify({ action: 'subscribe', data: 'mempool' }));
+    mempoolWs.send(JSON.stringify({ action: 'subscribe', data: 'mempool' }));
   };
   
-  ws.onmessage = (event) => {
-    const data = JSON.parse(event.data);
-    if (data.txid && data.vout) {
-      const totalValue = data.vout.reduce((sum, out) => sum + (out.value || 0), 0);
-      addTransaction({ txid: data.txid, value: totalValue, fee: data.fee || 0 });
-    }
+  mempoolWs.onmessage = (event) => {
+    try {
+      const data = JSON.parse(event.data);
+      if (data.txid && data.vout) {
+        const totalValue = data.vout.reduce((sum, out) => sum + (out.value || 0), 0);
+        addTransaction({ txid: data.txid, value: totalValue, fee: data.fee || 0 });
+      }
+    } catch (e) {}
   };
   
-  ws.onerror = () => {
+  mempoolWs.onerror = () => {
+    reconnectAttempts++;
     const statusEl = document.getElementById('connectionStatusHero');
     if (statusEl) {
-      statusEl.textContent = 'Error de conexión • Usando datos simulados';
+      statusEl.textContent = 'Error de conexión';
       statusEl.style.color = '#f59e0b';
     }
-    startFallbackMode();
+    if (!fallbackInterval && isPageVisible) {
+      startFallbackMode();
+    }
   };
   
-  ws.onclose = () => {
+  mempoolWs.onclose = () => {
+    mempoolWs = null;
     const statusEl = document.getElementById('connectionStatusHero');
     if (statusEl) {
-      statusEl.textContent = 'Desconectado';
+      statusEl.textContent = 'Reconectando...';
       statusEl.style.color = '#ef4444';
     }
-    setTimeout(connectMempool, 5000);
+    if (isPageVisible && reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
+      setTimeout(connectMempool, 15000);
+    }
   };
 }
 
 function startFallbackMode() {
-  if (fallbackInterval) return;
+  if (fallbackInterval || !isPageVisible) return;
+  
+  const simulatedTx = {
+    txid: Math.random().toString(36).substring(2) + Math.random().toString(36).substring(2),
+    fee: Math.floor(Math.random() * 500) + 50,
+    value: Math.floor(Math.random() * 500000) + 10000
+  };
+  addTransaction(simulatedTx);
+  
   fallbackInterval = setInterval(() => {
     const simulatedTx = {
-      txid: Array(64).fill().map(() => Math.random().toString(36)[2]).join(''),
+      txid: Math.random().toString(36).substring(2) + Math.random().toString(36).substring(2),
       fee: Math.floor(Math.random() * 500) + 50,
       value: Math.floor(Math.random() * 500000) + 10000
     };
     addTransaction(simulatedTx);
-  }, 10000);
+  }, 8000);
 }
 
 function addTransaction(tx) {
@@ -262,7 +353,7 @@ function addTransaction(tx) {
   const txHtml = `
     <div class="tx-item">
       <div class="tx-connector"></div>
-      <div class="tx-dot ${wallet.class}">${wallet.flag}</div>
+      <div class="tx-dot ${wallet.class}">${wallet.emoji ? wallet.emoji : `<img class="tx-wallet-icon" src="${wallet.icon}" alt="${wallet.name}" width="24" height="24">`}</div>
       <div class="tx-content">
         <div class="tx-wallet">
           <span class="tx-wallet-name">${wallet.name}</span>
@@ -297,3 +388,21 @@ function initTxFeed() {
 }
 
 document.addEventListener('DOMContentLoaded', initTxFeed);
+
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) {
+    isPageVisible = false;
+    if (fallbackInterval) {
+      clearInterval(fallbackInterval);
+      fallbackInterval = null;
+    }
+    disconnectMempool();
+  } else {
+    isPageVisible = true;
+    reconnectAttempts = 0;
+    if (!fallbackInterval) {
+      startFallbackMode();
+    }
+    connectMempool();
+  }
+});
