@@ -88,5 +88,7 @@
   "progress_of": "sur",
   "min_buy": "Minimum : 100 XOF",
   "min_sell": "Minimum : 200 SATS",
-  "stepLabels": ["Accueil", "Compte", "Vérif. Email", "Wallet", "Transaction", "Terminé !"]
+  "stepLabels": ["Accueil", "Compte", "Vérif. Email", "Wallet", "Transaction", "Terminé !"],
+  "wallets_title": "Wallets Lightning compatibles",
+  "wallets_sub": "Flash fonctionne avec tous les wallets et services compatibles Lightning. Envoyez et recevez des sats facilement, sans configuration complexe."
 }
