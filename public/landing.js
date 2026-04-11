@@ -173,10 +173,10 @@ function initComoFuncionaScroll() {
   const stepCards = document.querySelectorAll('.steps-section .step-card');
   
   const pathSegments = [
-    { end: 0.25 },
-    { end: 0.50 },
-    { end: 0.75 },
-    { end: 1 }
+    { end: 0.20 },
+    { end: 0.45 },
+    { end: 0.70 },
+    { end: 0.90 }
   ];
 
   const observerOptions = {
