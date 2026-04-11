@@ -172,5 +172,7 @@
   "footer_copyright": "© 2025 Flash. Tous droits réservés.",
   "footer_made_for": "Fait avec ⚡ pour l'Afrique",
   "wallets_title": "Wallets Lightning compatibles",
-  "wallets_sub": "Flash fonctionne avec tous les wallets et services compatibles Lightning. Envoyez et recevez des sats facilement, sans configuration complexe."
+  "wallets_sub": "Flash fonctionne avec tous les wallets et services compatibles Lightning. Envoyez et recevez des sats facilement, sans configuration complexe.",
+  "feat_frictionless_title": "Système sans intermédiaires",
+  "feat_frictionless_desc": "Opérez directement sur un réseau peer-to-peer sans avoir besoin de banques ou d'entités centrales. Chaque transaction est validée de manière distribuée, éliminant les points uniques de défaillance et réduisant les coûts inutiles."
 }
