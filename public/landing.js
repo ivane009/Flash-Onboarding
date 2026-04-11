@@ -176,7 +176,8 @@ function initComoFuncionaScroll() {
     { end: 0.20 },
     { end: 0.45 },
     { end: 0.70 },
-    { end: 0.90 }
+    { end: 0.90 },
+    { end: 1.0 }
   ];
 
   const observerOptions = {
@@ -207,6 +208,13 @@ function initComoFuncionaScroll() {
               dot.setAttribute('r', '10');
             }
           });
+          
+          if (index === stepCards.length - 1) {
+            setTimeout(() => {
+              stepDots[4].setAttribute('fill', '#4dd9c0');
+              stepDots[4].setAttribute('r', '12');
+            }, 800);
+          }
         }
       }
     });
