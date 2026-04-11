@@ -1798,7 +1798,7 @@ footer {
 
 /* === WALLETS SECTION === */
 #features {
-  padding-top: 20px;
+  padding-top: 100px;
 }
 #como-funciona {
   padding: 80px 0.5rem;
@@ -1898,7 +1898,7 @@ footer {
 
 /* === FAQ SECTION === */
 #faq {
-  padding-top: 0;
+  padding-top: 100px;
 }
 
 /* === TEXT CENTER === */
@@ -1953,8 +1953,8 @@ footer {
 }
 
 .glitch-img {
-  width: 400px;
-  height: 500px;
+  width: 450px;
+  height: 440px;
   object-fit: contain;
   object-position: center;
 }

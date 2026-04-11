@@ -184,5 +184,6 @@
   "feat_frictionless_badge": "🌐 Peer-to-Peer · Trustless",
   "feat_lightning_title": "Red Lightning",
   "feat_lightning_desc": "Micropagos instantáneos y de bajo costo mediante canales off-chain que optimizan la velocidad y eficiencia. Diseñada para escalar Bitcoin, Lightning permite realizar múltiples transacciones de forma casi inmediata, manteniendo la seguridad de la red principal.",
-  "feat_lightning_badge": "⚡ Instant · Scalable Payments"
+  "feat_lightning_badge": "⚡ Instant · Scalable Payments",
+  "faq_section_label": "Dudas"
 }

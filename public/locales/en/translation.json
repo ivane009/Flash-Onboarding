@@ -184,5 +184,6 @@
   "feat_frictionless_badge": "🌐 Peer-to-Peer · Trustless",
   "feat_lightning_title": "Lightning Network",
   "feat_lightning_desc": "Instant and low-cost micropayments through off-chain channels that optimize speed and efficiency. Designed to scale Bitcoin, Lightning enables multiple transactions almost immediately while maintaining the security of the main network.",
-  "feat_lightning_badge": "⚡ Instant · Scalable Payments"
+  "feat_lightning_badge": "⚡ Instant · Scalable Payments",
+  "faq_section_label": "Questions"
 }
