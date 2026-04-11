@@ -1,70 +1,174 @@
-# Getting Started with Create React App
+# Flash Onboarding
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A modern, multilingual Bitcoin onboarding platform designed for the African market, built with React and i18next for internationalization.
 
-## Available Scripts
+## Project Overview
 
-In the project directory, you can run:
+Flash is a web application that guides new users through the process of creating a Bitcoin wallet and purchasing their first sats via Lightning Network. The platform is optimized for mobile money integration across West Africa, supporting multiple languages and currencies.
 
-### `npm start`
+## Architecture
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### Tech Stack
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+- **Frontend Framework**: React 19 with Create React App
+- **Internationalization**: i18next + react-i18next
+- **Styling**: Custom CSS with CSS Variables
+- **Build Tool**: react-scripts (webpack under the hood)
+- **Testing**: Jest + React Testing Library
 
-### `npm test`
+### Project Structure
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```
+flash-onboarding/
+├── public/
+│   ├── landing.html          # Landing page HTML
+│   ├── landing.css          # Landing page styles
+│   ├── landing.js           # Landing page JavaScript
+│   ├── bitcoin-animation.js # Animated Bitcoin widget
+│   ├── index.html          # React app entry point
+│   ├── manifest.json       # PWA manifest
+│   ├── flash.png           # App logo
+│   ├── img/                # Images and icons
+│   │   ├── create.png      # Step 1 illustration
+│   │   ├── sesion.png      # Step 2 illustration
+│   │   ├── buy.png         # Step 3 illustration
+│   │   ├── confir.png       # Step 4 illustration
+│   │   ├── mining.png       # Feature: Mining
+│   │   ├── No Borders.png   # Feature: Borderless
+│   │   ├── Frictionless Payments.png
+│   │   └── Lightning Network.png
+│   └── locales/            # Translation files
+│       ├── en/translation.json
+│       ├── es/translation.json
+│       ├── fr/translation.json
+│       └── pt/translation.json
+├── src/
+│   ├── App.js              # Main React application
+│   ├── styles.css          # App-wide styles
+│   ├── utils/              # Utility functions
+│   └── [React components]
+├── build/                  # Production build output
+└── package.json
+```
 
-### `npm run build`
+### Key Features
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+1. **Multilingual Support**: 4 languages (English, Spanish, French, Portuguese)
+2. **Responsive Design**: Mobile-first approach with CSS custom properties
+3. **Animated Elements**: SVG-based path animations, Bitcoin price ticker
+4. **PWA Ready**: Manifest and service worker configuration
+5. **Mobile Money Integration**: Support for MTN MoMo, Moov Money, Celtiis, Togocel
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Getting Started
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### Prerequisites
 
-### `npm run eject`
+- Node.js 18+ and npm
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### Installation
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```bash
+# Clone the repository
+git clone https://github.com/ivane009/Flash-Onboarding.git
+cd Flash-Onboarding
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+# Install dependencies
+npm install
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+# Start development server
+npm start
+```
 
-## Learn More
+The app will open at [http://localhost:3000](http://localhost:3000).
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### Build for Production
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+```bash
+npm run build
+```
 
-### Code Splitting
+Production files will be generated in the `build/` directory.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## Development
 
-### Analyzing the Bundle Size
+### Adding Translations
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+Translation files are located in `public/locales/{lang}/translation.json`. Each key-value pair corresponds to a `data-i18n` attribute in the HTML.
 
-### Making a Progressive Web App
+**Example:**
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+```json
+{
+  "hero_title": "Buy Bitcoin starting<br>at 100 FCFA !",
+  "hero_cta": "Get Started"
+}
+```
 
-### Advanced Configuration
+```html
+<h1 data-i18n="hero_title">Buy Bitcoin starting<br>at 100 FCFA !</h1>
+<button data-i18n="hero_cta">Get Started</button>
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+To add a new language:
+1. Create `public/locales/{code}/translation.json`
+2. Copy structure from existing translation file
+3. Translate all values
+4. Add language option to language selector in `landing.html`
 
-### Deployment
+### Adding New Sections
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+1. Add HTML structure in `landing.html`
+2. Add corresponding CSS in `landing.css`
+3. If interactive, add JavaScript in `landing.js`
+4. Add translation keys for all text content
 
-### `npm run build` fails to minify
+### Styling Conventions
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- CSS Variables defined in `:root` for theming
+- BEM-like naming for component classes
+- Mobile-first responsive breakpoints
+
+## Git Workflow
+
+### Branch Naming
+
+- `main` - Production-ready code
+- Feature branches: `feature/description` or `fix/description`
+
+### Commit Messages
+
+Use clear, descriptive commit messages:
+- `feat: add new feature`
+- `fix: resolve issue with component`
+- `docs: update documentation`
+- `style: adjust styling`
+- `refactor: restructure code`
+
+### Pull Requests
+
+1. Create feature branch from `main`
+2. Make changes with clear commits
+3. Push and create PR
+4. Require review before merging
+
+## Environment
+
+The project uses React environment variables. For Create React App, prefix variables with `REACT_APP_`.
+
+## Browser Support
+
+- Chrome/Edge 90+
+- Firefox 88+
+- Safari 14+
+- Mobile browsers (iOS Safari, Chrome for Android)
+
+## License
+
+Private project - All rights reserved
+
+## Resources
+
+- [React Documentation](https://react.dev)
+- [i18next Documentation](https://www.i18next.com/)
+- [Create React App Docs](https://create-react-app.dev/)
+- [Lightning Network Info](https://lightning.network/)
