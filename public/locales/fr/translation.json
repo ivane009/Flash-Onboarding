@@ -173,6 +173,16 @@
   "footer_made_for": "Fait avec ⚡ pour l'Afrique",
   "wallets_title": "Wallets Lightning compatibles",
   "wallets_sub": "Flash fonctionne avec tous les wallets et services compatibles Lightning. Envoyez et recevez des sats facilement, sans configuration complexe.",
+  "feat_mining_title": "Minage décentralisé",
+  "feat_mining_desc": "Soutenu par des milliers de nœuds ASIC et des pools de minage distribués à l'échelle mondiale. Le réseau reste sécurisé grâce au mécanisme de consensus Proof of Work, le rendant altamente résistant aux attaques et manipulations. Avec une offre limitée à 21 000 000, Bitcoin garantit la rareté numérique et la confiance à long terme.",
+  "feat_mining_badge": "⛏ Proof of Work",
+  "feat_borders_title": "Sans frontières",
+  "feat_borders_desc": "Envoyez et recevez de la valeur partout dans le monde sans dépendre d'intermédiaires ni de restrictions géographiques. Bitcoin fonctionne sur un réseau mondial ouvert, accessible à toute personne ayant une connexion internet, permettant des transferts rapides et sans limites traditionnelles.",
+  "feat_borders_badge": "H24/D7 · worldwide",
   "feat_frictionless_title": "Système sans intermédiaires",
-  "feat_frictionless_desc": "Opérez directement sur un réseau peer-to-peer sans avoir besoin de banques ou d'entités centrales. Chaque transaction est validée de manière distribuée, éliminant les points uniques de défaillance et réduisant les coûts inutiles."
+  "feat_frictionless_desc": "Opérez directement sur un réseau peer-to-peer sans avoir besoin de banques ou d'entités centrales. Chaque transaction est validée de manière distribuée, éliminant les points uniques de défaillance et réduisant les coûts inutiles. Cela permet une interaction plus directe, efficace et transparente entre les utilisateurs.",
+  "feat_frictionless_badge": "🌐 Peer-to-Peer · Trustless",
+  "feat_lightning_title": "Réseau Lightning",
+  "feat_lightning_desc": "Micropaiements instantanés et peu coûteux via des canaux off-chain qui optimisent la vitesse et l'efficacité. Conçu pour faire évoluer Bitcoin, Lightning permet d'effectuer plusieurs transactions presque instantanément tout en maintenant la sécurité du réseau principal.",
+  "feat_lightning_badge": "⚡ Instant · Scalable Payments"
 }

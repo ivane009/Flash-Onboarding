@@ -173,6 +173,16 @@
   "footer_made_for": "Hecho con ⚡ para África",
   "wallets_title": "Billeteras Lightning compatibles",
   "wallets_sub": "Flash funciona con todas las billeteras y servicios compatibles con Lightning. Envía y recibe sats fácilmente, sin configuración compleja.",
+  "feat_mining_title": "Minería descentralizada",
+  "feat_mining_desc": "Respaldado por miles de nodos ASIC y pools de minería distribuidos a nivel global. La red se mantiene segura gracias al mecanismo de consenso Proof of Work, lo que la hace altamente resistente a ataques y manipulaciones. Con un suministro limitado de 21,000,000, Bitcoin garantiza escasez digital y confianza a largo plazo.",
+  "feat_mining_badge": "⛏ Proof of Work",
+  "feat_borders_title": "Sin fronteras",
+  "feat_borders_desc": "Envía y recibe valor en cualquier parte del mundo sin depender de intermediarios o restricciones geográficas. Bitcoin funciona sobre una red global abierta, accesible para cualquier persona con conexión a internet, permitiendo transferencias rápidas y sin límites tradicionales.",
+  "feat_borders_badge": "H24/D7 · worldwide",
   "feat_frictionless_title": "Sistema sin intermediarios",
-  "feat_frictionless_desc": "Opera directamente en una red peer-to-peer sin necesidad de bancos o entidades centrales. Cada transacción se valida de forma distribuida, eliminando puntos únicos de fallo y reduciendo costos innecesarios."
+  "feat_frictionless_desc": "Opera directamente en una red peer-to-peer sin necesidad de bancos o entidades centrales. Cada transacción se valida de forma distribuida, eliminando puntos únicos de fallo y reduciendo costos innecesarios. Esto permite una interacción más directa, eficiente y transparente entre usuarios.",
+  "feat_frictionless_badge": "🌐 Peer-to-Peer · Trustless",
+  "feat_lightning_title": "Red Lightning",
+  "feat_lightning_desc": "Micropagos instantáneos y de bajo costo mediante canales off-chain que optimizan la velocidad y eficiencia. Diseñada para escalar Bitcoin, Lightning permite realizar múltiples transacciones de forma casi inmediata, manteniendo la seguridad de la red principal.",
+  "feat_lightning_badge": "⚡ Instant · Scalable Payments"
 }

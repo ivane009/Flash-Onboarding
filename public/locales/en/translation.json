@@ -173,6 +173,16 @@
   "footer_made_for": "Made with ⚡ for Africa",
   "wallets_title": "Compatible Lightning Wallets",
   "wallets_sub": "Flash works with all Lightning-compatible wallets. Send and receive sats easily, without complex configuration.",
+  "feat_mining_title": "Decentralized Mining",
+  "feat_mining_desc": "Supported by thousands of ASIC nodes and globally distributed mining pools. The network remains secure thanks to the Proof of Work consensus mechanism, making it highly resistant to attacks and manipulation. With a limited supply of 21,000,000, Bitcoin guarantees digital scarcity and long-term trust.",
+  "feat_mining_badge": "⛏ Proof of Work",
+  "feat_borders_title": "Borderless",
+  "feat_borders_desc": "Send and receive value anywhere in the world without relying on intermediaries or geographic restrictions. Bitcoin operates on an open global network, accessible to anyone with an internet connection, enabling fast transfers without traditional limits.",
+  "feat_borders_badge": "H24/D7 · worldwide",
   "feat_frictionless_title": "System without intermediaries",
-  "feat_frictionless_desc": "Operate directly on a peer-to-peer network without the need for banks or central entities. Each transaction is validated in a distributed manner, eliminating single points of failure and reducing unnecessary costs."
+  "feat_frictionless_desc": "Operate directly on a peer-to-peer network without the need for banks or central entities. Each transaction is validated in a distributed manner, eliminating single points of failure and reducing unnecessary costs. This enables more direct, efficient and transparent interaction between users.",
+  "feat_frictionless_badge": "🌐 Peer-to-Peer · Trustless",
+  "feat_lightning_title": "Lightning Network",
+  "feat_lightning_desc": "Instant and low-cost micropayments through off-chain channels that optimize speed and efficiency. Designed to scale Bitcoin, Lightning enables multiple transactions almost immediately while maintaining the security of the main network.",
+  "feat_lightning_badge": "⚡ Instant · Scalable Payments"
 }
