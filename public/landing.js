@@ -172,35 +172,17 @@ function initComoFuncionaScroll() {
   const stepDots = document.querySelectorAll('#map-svg .step-dot');
   const stepCards = document.querySelectorAll('.steps-section .step-card');
   
-  const pathSegments = [
-    { end: 0.20 },
-    { end: 0.45 },
-    { end: 0.70 },
-    { end: 0.90 },
-    { end: 1.0 }
-  ];
+  const pathSegments = [0.20, 0.45, 0.70, 0.90, 1.0];
 
-  const observerOptions = {
-    root: null,
-    rootMargin: '-20% 0px -20% 0px',
-    threshold: 0
-  };
-
-  let currentStep = -1;
-
-  const updatePath = (step) => {
-    if (step < 0) {
-      pathProgress.style.strokeDashoffset = pathLength;
-    } else {
-      const progress = pathSegments[step].end;
-      const offset = pathLength * (1 - progress);
-      pathProgress.style.strokeDashoffset = offset;
-    }
+  const updatePath = (progress) => {
+    const offset = pathLength * (1 - progress);
+    pathProgress.style.strokeDashoffset = offset;
     
     stepDots.forEach((dot, i) => {
-      if (i <= step) {
+      const segmentEnd = pathSegments[i];
+      if (progress >= segmentEnd) {
         dot.setAttribute('fill', '#4dd9c0');
-        dot.setAttribute('r', i === step ? '12' : '10');
+        dot.setAttribute('r', i === stepDots.length - 1 && progress >= 1 ? '12' : (progress >= pathSegments[i] && (i === 0 || progress < pathSegments[i - 1] + 0.05) ? '12' : '10'));
         dot.setAttribute('stroke', '#0f1f30');
       } else {
         dot.setAttribute('fill', '#2a4a68');
@@ -209,24 +191,31 @@ function initComoFuncionaScroll() {
     });
   };
 
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      const index = Array.from(stepCards).indexOf(entry.target);
-      if (entry.isIntersecting) {
-        if (index >= 0 && index < pathSegments.length && index > currentStep) {
-          currentStep = index;
-          updatePath(currentStep);
-        }
-      } else {
-        if (index >= 0 && index <= currentStep) {
-          currentStep = index - 1;
-          updatePath(currentStep);
-        }
-      }
-    });
-  }, observerOptions);
+  const handleScroll = () => {
+    const rect = wrapper.getBoundingClientRect();
+    const wrapperTop = rect.top;
+    const wrapperHeight = rect.height;
+    const viewportHeight = window.innerHeight;
+    
+    if (wrapperTop > viewportHeight) {
+      updatePath(0);
+      return;
+    }
+    
+    if (wrapperTop + wrapperHeight < 0) {
+      updatePath(1);
+      return;
+    }
+    
+    const scrolled = Math.max(0, -wrapperTop);
+    const totalScrollable = wrapperHeight - viewportHeight;
+    const progress = Math.min(1, Math.max(0, scrolled / totalScrollable));
+    
+    updatePath(progress);
+  };
 
-  stepCards.forEach(card => observer.observe(card));
+  window.addEventListener('scroll', handleScroll, { passive: true });
+  handleScroll();
 }
 
 function initFeatTooltips() {
