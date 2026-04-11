@@ -1633,6 +1633,10 @@ footer {
   display: flex;
   flex-direction: column;
 }
+
+.feat-card-new:hover {
+  border-color: #1a3a5c;
+}
 .feat-card-new.featured {
   background: #3B5BDB;
   border-color: #3B5BDB;
