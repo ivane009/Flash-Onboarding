@@ -188,33 +188,39 @@ function initComoFuncionaScroll() {
 
   let currentStep = -1;
 
+  const updatePath = (step) => {
+    if (step < 0) {
+      pathProgress.style.strokeDashoffset = pathLength;
+    } else {
+      const progress = pathSegments[step].end;
+      const offset = pathLength * (1 - progress);
+      pathProgress.style.strokeDashoffset = offset;
+    }
+    
+    stepDots.forEach((dot, i) => {
+      if (i <= step) {
+        dot.setAttribute('fill', '#4dd9c0');
+        dot.setAttribute('r', i === step ? '12' : '10');
+        dot.setAttribute('stroke', '#0f1f30');
+      } else {
+        dot.setAttribute('fill', '#2a4a68');
+        dot.setAttribute('r', '10');
+      }
+    });
+  };
+
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
+      const index = Array.from(stepCards).indexOf(entry.target);
       if (entry.isIntersecting) {
-        const index = Array.from(stepCards).indexOf(entry.target);
         if (index >= 0 && index < pathSegments.length && index > currentStep) {
           currentStep = index;
-          const progress = pathSegments[index].end;
-          const offset = pathLength * (1 - progress);
-          pathProgress.style.strokeDashoffset = offset;
-          
-          stepDots.forEach((dot, i) => {
-            if (i <= index) {
-              dot.setAttribute('fill', '#4dd9c0');
-              dot.setAttribute('r', i === index ? '12' : '10');
-              dot.setAttribute('stroke', '#0f1f30');
-            } else {
-              dot.setAttribute('fill', '#2a4a68');
-              dot.setAttribute('r', '10');
-            }
-          });
-          
-          if (index === stepCards.length - 1) {
-            setTimeout(() => {
-              stepDots[4].setAttribute('fill', '#4dd9c0');
-              stepDots[4].setAttribute('r', '12');
-            }, 800);
-          }
+          updatePath(currentStep);
+        }
+      } else {
+        if (index >= 0 && index <= currentStep) {
+          currentStep = index - 1;
+          updatePath(currentStep);
         }
       }
     });
