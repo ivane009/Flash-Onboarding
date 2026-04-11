@@ -170,5 +170,7 @@
   "footer_company": "Company",
   "footer_follow": "Follow us",
   "footer_copyright": "© 2025 Flash. All rights reserved.",
-  "footer_made_for": "Made with ⚡ for Africa"
+  "footer_made_for": "Made with ⚡ for Africa",
+  "wallets_title": "Compatible Lightning Wallets",
+  "wallets_sub": "Flash works with all Lightning-compatible wallets. Send and receive sats easily, without complex configuration."
 }

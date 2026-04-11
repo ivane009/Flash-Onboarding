@@ -170,5 +170,7 @@
   "footer_company": "Compañía",
   "footer_follow": "Síguenos",
   "footer_copyright": "© 2025 Flash. Todos los derechos reservados.",
-  "footer_made_for": "Hecho con ⚡ para África"
+  "footer_made_for": "Hecho con ⚡ para África",
+  "wallets_title": "Billeteras Lightning compatibles",
+  "wallets_sub": "Flash funciona con todas las billeteras y servicios compatibles con Lightning. Envía y recibe sats fácilmente, sin configuración compleja."
 }
