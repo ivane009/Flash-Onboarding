@@ -605,13 +605,34 @@ nav {
   width: 100%;
   height: auto;
   max-height: 80vh;
+  filter: drop-shadow(0 0 20px rgba(77, 217, 192, 0.15));
+}
+
+#map-svg g[fill="none"] {
+  stroke: #1d3a5c;
+  stroke-width: 1.5;
+  opacity: 0.8;
+}
+
+#map-svg rect {
+  opacity: 0.9;
+}
+
+#path-base {
+  filter: drop-shadow(0 0 3px rgba(42, 74, 104, 0.5));
 }
 
 #path-progress {
-  stroke-dasharray: 2000;
-  stroke-dashoffset: 2000;
-  transition: stroke-dashoffset 0.5s ease-out;
-  stroke-width: 5;
+  stroke-dasharray: 1200;
+  stroke-dashoffset: 1200;
+  transition: stroke-dashoffset 0.8s ease-out;
+  stroke-width: 4;
+  filter: drop-shadow(0 0 8px rgba(77, 217, 192, 0.6));
+}
+
+.step-dot {
+  transition: all 0.4s ease-out;
+  filter: drop-shadow(0 0 4px rgba(77, 217, 192, 0.3));
 }
 
 #content-panel {
@@ -1078,16 +1099,17 @@ nav {
   justify-content: space-between;
   align-items: center;
   cursor: pointer;
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 500;
   color: var(--text);
   gap: 1rem;
   user-select: none;
+  padding-left: 20px;
 }
 .faq-q:hover { color: var(--btc); }
 .faq-icon { font-size: 20px; color: var(--muted); flex-shrink: 0; transition: transform 0.2s; }
 .faq-icon.open { transform: rotate(45deg); color: var(--btc); }
-.faq-a { font-size: 14px; color: var(--muted); line-height: 1.7; margin-top: 0; max-height: 0; overflow: hidden; transition: max-height 0.3s ease, margin-top 0.2s; }
+.faq-a { font-size: 16px; color: var(--muted); line-height: 1.7; margin-top: 0; max-height: 0; overflow: hidden; transition: max-height 0.3s ease, margin-top 0.2s; padding-left: 20px; }
 .faq-a.open { max-height: 200px; margin-top: 0.75rem; }
 
 /* CTA SECTION */

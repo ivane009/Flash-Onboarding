@@ -169,35 +169,42 @@ function initComoFuncionaScroll() {
   pathProgress.style.strokeDasharray = pathLength;
   pathProgress.style.strokeDashoffset = pathLength;
 
-  const stepCircles = document.querySelectorAll('#map-svg circle');
+  const stepDots = document.querySelectorAll('#map-svg .step-dot');
   const stepCards = document.querySelectorAll('.steps-section .step-card');
   
   const pathSegments = [
-    { end: 0.15 },    // Step 1 - reaches first circle
-    { end: 0.35 },    // Step 2 - reaches second circle
-    { end: 0.6 },     // Step 3 - reaches third circle
-    { end: 1 }        // Step 4 - reaches fourth circle
+    { end: 0.25 },
+    { end: 0.50 },
+    { end: 0.75 },
+    { end: 1 }
   ];
 
   const observerOptions = {
     root: null,
-    rootMargin: '-40% 0px -40% 0px',
+    rootMargin: '-20% 0px -20% 0px',
     threshold: 0
   };
+
+  let currentStep = -1;
 
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
         const index = Array.from(stepCards).indexOf(entry.target);
-        if (index >= 0 && index < pathSegments.length) {
+        if (index >= 0 && index < pathSegments.length && index > currentStep) {
+          currentStep = index;
           const progress = pathSegments[index].end;
           const offset = pathLength * (1 - progress);
           pathProgress.style.strokeDashoffset = offset;
           
-          stepCircles.forEach((circle, i) => {
+          stepDots.forEach((dot, i) => {
             if (i <= index) {
-              circle.setAttribute('fill', '#4dd9c0');
-              circle.setAttribute('r', i === index ? '10' : '8');
+              dot.setAttribute('fill', '#4dd9c0');
+              dot.setAttribute('r', i === index ? '12' : '10');
+              dot.setAttribute('stroke', '#0f1f30');
+            } else {
+              dot.setAttribute('fill', '#2a4a68');
+              dot.setAttribute('r', '10');
             }
           });
         }
