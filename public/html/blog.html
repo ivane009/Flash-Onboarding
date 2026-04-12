@@ -8,19 +8,19 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/blog.css">
+  <link rel="stylesheet" href="/css/blog.css">
 </head>
 <body>
   <div class="progress-bar" id="progressBar"></div>
 
   <header class="blog-header">
     <div class="header-inner">
-      <a href="landing.html" class="logo">
+      <a href="/html/landing.html" class="logo">
         <img src="flash.png" alt="Flash" class="logo-icon">
         <span class="logo-text">FLASH</span>
       </a>
       <div class="header-right">
-        <a href="landing.html" class="back-link" data-i18n="blog_back">← Volver al inicio</a>
+        <a href="/html/landing.html" class="back-link" data-i18n="blog_back">← Volver al inicio</a>
         <div class="lang-selector">
           <span class="lang-current" id="currentLang">ES</span>
           <div class="lang-dropdown" id="langDropdown">
@@ -38,7 +38,7 @@
     <article>
       <header class="article-header">
         <nav class="breadcrumb">
-          <a href="landing.html" data-i18n="blog_home">Inicio</a>
+          <a href="/html/landing.html" data-i18n="blog_home">Inicio</a>
           <span>/</span>
           <a href="#" data-i18n="blog_category">Guía Práctica</a>
           <span>/</span>
@@ -159,7 +159,7 @@
 
   <footer class="article-footer">
     <div class="footer-content">
-      <a href="landing.html" class="footer-logo">
+      <a href="/html/landing.html" class="footer-logo">
         <img src="flash.png" alt="Flash">
         <span class="logo-text">FLASH</span>
       </a>
@@ -179,8 +179,8 @@
     </div>
   </footer>
 
-  <script src="/landing.js"></script>
-  <script src="/blog.js"></script>
+  <script src="/js/landing.js"></script>
+  <script src="/js/blog.js"></script>
   <script>
     const savedLang = localStorage.getItem('lang') || 'es';
     loadTranslations(savedLang);

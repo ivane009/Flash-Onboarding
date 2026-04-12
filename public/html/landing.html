@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title data-i18n="page_title">Flash — Bitcoin</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Inter:wght@300;400;500&display=wap" rel="stylesheet">
-<link rel="stylesheet" href="/landing.css">
+<link rel="stylesheet" href="/css/landing.css">
 </head>
 <body>
 
@@ -15,7 +15,7 @@
     <span class="nav-logo-text">Flash</span>
   </a>
   <ul class="nav-links">
-    <li><a href="/blog.html" data-i18n="nav_blog">Blog</a></li>
+    <li><a href="/html/blog.html" data-i18n="nav_blog">Blog</a></li>
     <li><a href="#features" data-i18n="nav_features">Benefits</a></li>
     <li><a href="#como-funciona" data-i18n="nav_how">How it works</a></li>
     <li><a href="#faq" data-i18n="nav_faq">FAQ</a></li>
@@ -30,8 +30,8 @@
     </li>
   </ul>
   <div class="nav-auth">
-    <a href="#" class="nav-login" onclick="startAuth('login'); return false;" data-i18n="nav_login">Log in</a>
-    <button class="nav-cta" onclick="startAuth('register')" data-i18n="nav_cta">Create free account</button>
+    <a href="/html/iniciar-sesion.html" class="nav-login" data-i18n="nav_login">Log in</a>
+    <a href="/html/crear-cuenta.html" class="nav-cta" data-i18n="nav_cta">Create free account</a>
   </div>
 </nav>
 
@@ -63,7 +63,7 @@
     <h1 data-i18n="hero_title">Buy Bitcoin starting<br>at 100 FCFA !</h1>
      <p class="hero-sub" data-i18n="hero_sub">Regístrate fácilmente ingresando tu nombre, correo electrónico y número de teléfono para comenzar a operar con Bitcoin de forma segura en Flash. Nuestro proceso es rápido y sencillo, pensado para que puedas empezar en minutos con total confianza. Protegemos tu información y te brindamos una experiencia confiable desde el primer momento, para que puedas enfocarte en aprovechar todas las oportunidades del mundo Bitcoin.</p>
     <div class="hero-btns">
-      <button class="btn-primary" onclick="startAuth('register')" data-i18n="hero_cta">Get Started</button>
+      <a href="/html/crear-cuenta.html" class="btn-primary" data-i18n="hero_cta">Get Started</a>
       <button class="btn-ghost" onclick="document.getElementById('como-funciona').scrollIntoView({behavior:'smooth'})" data-i18n="hero_how">See how it works</button>
     </div>
     <div class="hero-trust">
@@ -379,7 +379,7 @@
   <div class="cta-box">
     <h2 data-i18n="cta_title">Start with $1 today</h2>
     <p data-i18n="cta_sub">Join thousands of people who are already saving with Bitcoin.</p>
-    <button class="btn-white" onclick="startAuth('register')" data-i18n="cta_btn">Create free account →</button>
+    <a href="/html/crear-cuenta.html" class="btn-white" data-i18n="cta_btn">Create free account →</a>
   </div>
 </div>
 
@@ -549,7 +549,7 @@
   </div>
 </footer>
 
-<script src="/bitcoin-animation.js"></script>
-<script src="/landing.js"></script>
+<script src="/js/bitcoin-animation.js"></script>
+<script src="/js/landing.js"></script>
 </body>
 </html>

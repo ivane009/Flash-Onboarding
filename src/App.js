@@ -213,9 +213,9 @@ function renderWelcome() {
         </div>
       </div>
       <div class="welcome-right">
-        <h2>${t('welcome_h2')}</h2>
-        <p class="sub">${t('welcome_sub2')}</p>
-        ${buildRegisterForm()}
+        <h2>${t('login_h2') || 'Crear sesión'}</h2>
+        <p class="sub">${t('login_sub') || 'Ingresa tus datos para continuar'}</p>
+        ${buildLoginForm()}
       </div>
     </div>
   `;
@@ -305,6 +305,34 @@ function buildRegisterForm() {
     <div class="login-link">
       ${t('login_link')} <a onclick="showToast(t('toast_login_soon'),'success')">${t('login_connect')}</a>
     </div>`;
+}
+
+function buildLoginForm() {
+  return `
+    <div class="form-group">
+      <label>${t('label_email') || 'Correo electrónico'}</label>
+      <input id="f-email-login" type="email" placeholder="kofi@example.com" value="${state.form.email || ''}"/>
+    </div>
+    <div class="form-group">
+      <label>${t('label_pass') || 'Contraseña'}</label>
+      <div class="password-wrap">
+        <input id="f-password-login" type="password" placeholder="${t('pass_placeholder') || 'Mínimo 8 caracteres'}"/>
+        <button class="toggle-pw" onclick="togglePw('f-password-login',this)" type="button">👁️</button>
+      </div>
+    </div>
+    <button class="btn btn-primary" id="btnLogin" onclick="doLogin()">${t('btn_login') || 'Iniciar sesión'}</button>
+    <div class="trust-row">
+      <span class="trust-item">🔒 ${t('trust_secure') || 'Seguro y cifrado'}</span>
+      <span class="trust-item">⚡ ${t('trust_lightning') || 'Lightning Network'}</span>
+    </div>
+    <div class="login-link">
+      ${t('no_account') || '¿No tienes cuenta?'} <a onclick="goToRegister()">${t('create_account') || 'Crear cuenta'}</a>
+    </div>`;
+}
+
+function goToRegister() {
+  state.step = 1;
+  renderStep();
 }
 
 
@@ -627,7 +655,21 @@ async function doVerifyOTP() {
 }
 
 async function doLogin() {
-  // No se usa en modo demo
+  const email = document.getElementById('f-email-login')?.value.trim();
+  const pass  = document.getElementById('f-password-login')?.value;
+
+  if (!email) { showToast(t('toast_email_required') || 'Email requerido'); return; }
+  if (!pass)  { showToast(t('toast_pass_required') || 'Contraseña requerida'); return; }
+
+  const btn = document.getElementById('btnLogin');
+  if (btn) { btn.textContent = t('btn_logging') || 'Iniciando sesión...'; btn.disabled = true; }
+
+  state.form = { ...state.form, email, password: pass };
+  await new Promise(r => setTimeout(r, 800));
+
+  showToast(t('toast_logged') || 'Sesión iniciada', 'success');
+  state.step = 1;
+  renderStep();
 }
 
 async function doResendOTP() {
