@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px #0d1b2a inset !important;
+  -webkit-text-fill-color: #ffffff !important;
+  background-color: #0d1b2a !important;
+}
+
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px #0d1b2a inset !important;
+  -webkit-text-fill-color: #ffffff !important;
+  background-color: #0d1b2a !important;
+}
+
+select option {
+  background-color: #0d1b2a;
+  color: #ffffff;
+}
+
+body {
+  background-color: #0d1b2a;
+}

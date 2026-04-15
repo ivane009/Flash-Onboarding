@@ -17,7 +17,7 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
-  background: var(--bg);
+  background: #0a1628;
   color: var(--text);
   font-family: 'DM Sans', sans-serif;
   height: 100vh;
@@ -277,9 +277,8 @@ main {
   padding: 36px 32px;
   display: flex;
   flex-direction: column;
- justify-content: flex-start;
+  justify-content: flex-start;
   gap: 16px;
-
   overflow-y: auto;
 }
 
@@ -349,7 +348,7 @@ main {
   border-radius: 0;
   padding: 14px 16px;
   overflow: hidden;
-  max-height: 180px;  /* altura visible */
+  max-height: 180px;
 }
 
 .testimonial-track {
@@ -514,6 +513,35 @@ input:focus, select:focus {
 
 input::placeholder { color: var(--text-dim); }
 
+/* intl-tel-input styles */
+.iti {
+  width: 100%;
+}
+
+.iti .iti__country-list {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  max-height: 200px;
+}
+
+.iti .iti__country {
+  padding: 8px 14px;
+}
+
+.iti .iti__country:hover {
+  background: #f0f1f8;
+}
+
+.iti .iti__country.iti__active {
+  background: #f0f1f8;
+}
+
+.iti .iti__dial-code {
+  color: var(--text-muted);
+}
+
 .form-row  { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .input-hint { font-size: 11px; color: var(--text-dim); margin-top: 4px; }
 
@@ -564,10 +592,24 @@ input::placeholder { color: var(--text-dim); }
   background: none;
   border: none;
   cursor: pointer;
-  color: var(--text-muted);
-  font-size: 16px;
-  padding: 0;
-  width: auto;
+  padding: 4px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.toggle-pw svg {
+  width: 18px;
+  height: 18px;
+  stroke: var(--text-muted);
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.toggle-pw:hover svg {
+  stroke: var(--text);
 }
 
 /* ── Buttons ── */
@@ -887,7 +929,7 @@ input::placeholder { color: var(--text-dim); }
   .welcome-right { padding: 24px 22px; }
 }
 
-/* Pantalla dividida media (600px - 859px) — mantiene dos columnas pero compacto */
+/* Pantalla dividida media (600px - 859px) */
 @media (max-width: 859px) and (min-width: 600px) {
   .welcome-layout {
     grid-template-columns: 45% 55%;
@@ -896,7 +938,7 @@ input::placeholder { color: var(--text-dim); }
   }
   .welcome-left {
     padding: 20px 16px;
-    display: flex; /* mantener visible */
+    display: flex;
   }
   .welcome-left h1 { font-size: 18px; line-height: 1.2; }
   .welcome-left .subtitle { font-size: 12px; margin-bottom: 14px; }
@@ -1048,7 +1090,7 @@ input::placeholder { color: var(--text-dim); }
 
 .country-list {
   list-style: none;
-  max-height: 240px;   /* ~10 países visibles */
+  max-height: 240px;
   overflow-y: auto;
   margin: 0;
   padding: 4px 0;

@@ -5,7 +5,7 @@ const API_BASE = 'https://staging.bitcoinflash.xyz/api/v1';
 
 const state = {
   step: 0, totalSteps: 6, userId: null, jwtToken: null,
-  lang: 'es',
+  lang: localStorage.getItem('lang') || 'es',
   form: {
     name: '', email: '', password: '', whatsapp: '',
     country: 'BJ', provider: '', mobileMoneyPhone: '',
@@ -63,7 +63,7 @@ document.addEventListener('click', e => {
 function setLang(code, flag, name, el) {
   state.lang = code;
   i18next.changeLanguage(code);
-  localStorage.setItem('i18nextLng', code);
+  localStorage.setItem('lang', code);
   document.getElementById('langFlag').textContent = flag;
   document.getElementById('langName').textContent = name;
   document.querySelectorAll('.lang-option').forEach(o => o.classList.remove('active'));

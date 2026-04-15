@@ -105,7 +105,7 @@ async function loadTranslations(lang) {
 }
 
 async function setLang(lang) {
-  sessionStorage.setItem('lang', lang);
+  localStorage.setItem('lang', lang);
   await loadTranslations(lang);
   updateLangLabel(lang);
 }
@@ -118,7 +118,7 @@ function updateLangLabel(lang) {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-  const savedLang = sessionStorage.getItem('lang') || 'fr';
+  const savedLang = localStorage.getItem('lang') || 'fr';
   const langSelect = document.querySelector('.lang-select');
   if (langSelect) {
     langSelect.value = savedLang;
