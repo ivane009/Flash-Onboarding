@@ -74,42 +74,177 @@ function render() {
           <p>Tu espacio personal para gestionar tus Sats y transacciones.</p>
         </div>
 
-        <div class="menu-grid">
-          <a href="/html/comprar-sats.html" class="menu-card">
-            <div class="menu-icon">${svg.zap}</div>
-            <h3>Comprar Sats</h3>
-            <p>Adquiere Sats de forma rápida y segura</p>
+        <div class="menu-grid menu-grid-2col">
+          <a href="/html/comprar-sats.html" class="menu-card menu-card-sats">
+            <h3><div class="menu-icon">${svg.zap}</div> Sats Transactions</h3>
+            <p class="menu-count">0</p>
+            <span class="menu-action">Acheter</span>
           </a>
 
-          <a href="#" class="menu-card">
-            <div class="menu-icon">${svg.history}</div>
-            <h3>Historial</h3>
-            <p>Ver todas tus transacciones</p>
+          <a href="/html/comprar-sats.html?vender=1" class="menu-card menu-card-momo">
+            <h3><div class="menu-icon">${svg.history}</div> MoMo Transactions</h3>
+            <p class="menu-count">0</p>
+            <span class="menu-action">Vendre</span>
+          </a>
+        </div>
+
+        <div class="menu-grid menu-grid-3col">
+          <a href="#" class="menu-card menu-card-flashbacks" id="flashbacksCard">
+            <h3><div class="menu-icon">${svg.wallet}</div> Mes Flashbacks</h3>
+            <p>Flashback illustration</p>
           </a>
 
-          <a href="#" class="menu-card">
-            <div class="menu-icon">${svg.wallet}</div>
-            <h3>Billetas</h3>
-            <p>Gestiona tus direcciones Lightning</p>
+          <a href="#" class="menu-card menu-card-modifier" id="modifierCard">
+            <h3><div class="menu-icon">${svg.settings}</div> Modifier profile</h3>
+            <span class="menu-action">Modifier</span>
           </a>
 
-          <a href="#" class="menu-card">
-            <div class="menu-icon">${svg.card}</div>
-            <h3>Métodos de pago</h3>
-            <p>Configura tus opciones de pago</p>
+          <a href="/html/history.html" class="menu-card menu-card-historique">
+            <h3><div class="menu-icon">${svg.history}</div> Historique de transactions</h3>
+            <span class="menu-action">Consulter</span>
           </a>
+        </div>
 
-          <a href="#" class="menu-card">
-            <div class="menu-icon">${svg.settings}</div>
-            <h3>Configuración</h3>
-            <p>Personaliza tu cuenta</p>
-          </a>
+        <div id="profileModal" class="modal-overlay" style="display:none;">
+          <div class="modal-card" style="max-width:420px;">
+            <h2>Modifier le profil</h2>
+            <form id="profileForm">
+              <div style="margin-bottom:16px;">
+                <label class="field-label">Prénom</label>
+                <input type="text" class="lightning-input" id="editPrenom" value="Elias" style="width:100%;">
+              </div>
+              <div style="margin-bottom:16px;">
+                <label class="field-label">Nom</label>
+                <input type="text" class="lightning-input" id="editNom" value="Ivan" style="width:100%;">
+              </div>
+              <div style="margin-bottom:16px;">
+                <label class="field-label">Numéro</label>
+                <input type="text" class="lightning-input" id="editNumero" value="+50360108693" style="width:100%;">
+              </div>
+              <div style="margin-bottom:16px;">
+                <label class="field-label">Adresse Email</label>
+                <input type="email" class="lightning-input" id="editEmail" value="ivanelias009@gmail.com" style="width:100%;">
+              </div>
+              <button type="submit" class="confirm-btn" style="margin-top:8px;">Enregistrer</button>
+              <button type="button" class="confirm-btn" style="margin-top:8px;background:#64748b;margin-left:8px;" onclick="closeProfileModal()">Annuler</button>
+            </form>
+          </div>
+        </div>
 
-          <a href="#" class="menu-card">
-            <div class="menu-icon">${svg.help}</div>
-            <h3>Ayuda</h3>
-            <p>Obtén soporte</p>
-          </a>
+        <div id="flashbackModal" class="modal-overlay" style="display:none;align-items:center;justify-content:center;">
+          <div id="flashbackCard" style="width:500px;background:#ffffff;border-radius:20px;box-shadow:0 8px 32px rgba(0,0,0,0.18);overflow:hidden;">
+            <div style="padding:20px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #e5e7eb;">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="#1a3fcf"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                <span style="font-weight:700;color:#1a3fcf;font-size:18px;">FLASHBACK</span>
+              </div>
+              <div style="text-align:right;">
+                <div style="font-size:14px;font-weight:600;color:#111827;">Ivan Elias</div>
+                <div style="font-size:12px;color:#6b7280;">bitcoinflash.xyz</div>
+              </div>
+            </div>
+
+            <div style="margin:16px;border-radius:16px;background:linear-gradient(135deg, #f0f4ff 0%, #fafafa 100%);border:1px solid #e8eaf6;padding:24px;text-align:center;">
+              <div style="font-size:14px;color:#6b7280;margin-bottom:12px;">mars 2026</div>
+              <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:12px;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="#1a3fcf"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                <span style="font-size:52px;font-weight:900;color:#1a3fcf;">0</span>
+                <span style="font-size:18px;font-weight:700;color:#1a3fcf;">Jour</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="#1a3fcf"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+              </div>
+              <div style="font-size:14px;color:#6b7280;">Non stop Stacking</div>
+            </div>
+
+            <div style="padding:20px 24px;display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+              <div>
+                <div style="font-size:13px;color:#9ca3af;margin-bottom:4px;">Sats achetés</div>
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <span style="font-size:32px;font-weight:700;color:#111827;">0</span>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                </div>
+              </div>
+              <div>
+                <div style="font-size:13px;color:#9ca3af;margin-bottom:4px;">Sats vendues</div>
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  <span style="font-size:32px;font-weight:700;color:#111827;">0</span>
+                </div>
+              </div>
+              <div>
+                <div style="font-size:13px;color:#9ca3af;margin-bottom:4px;">Total FCFA</div>
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <span style="font-size:32px;font-weight:700;color:#111827;">0</span>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                </div>
+              </div>
+              <div>
+                <div style="font-size:13px;color:#9ca3af;margin-bottom:4px;">Total transactions</div>
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  <span style="font-size:32px;font-weight:700;color:#111827;">0</span>
+                </div>
+              </div>
+            </div>
+
+            <div style="height:80px;position:relative;overflow:hidden;background:#f3f4f6;display:flex;align-items:center;justify-content:center;">
+              <div style="position:absolute;bottom:0;width:100%;height:56px;background:linear-gradient(90deg, #e63946, #f4a261, #2ec4b6);display:flex;align-items:center;justify-content:center;">
+                <span style="color:white;font-weight:900;font-size:18px;letter-spacing:0.5px;">Papa No Dey, Maman No Dey</span>
+              </div>
+            </div>
+            <div style="padding:20px;display:flex;justify-content:center;gap:32px;border-top:1px solid #e5e7eb;">
+              <button onclick="telechargerFlashback()" style="background:white;border:2px solid #1a3fcf;color:#1a3fcf;font-weight:600;padding:12px 32px;border-radius:12px;cursor:pointer;">Télécharger</button>
+              <button onclick="partagerFlashback()" style="background:transparent;border:none;color:#111827;font-weight:600;padding:12px 32px;cursor:pointer;">Partager</button>
+            </div>
+          </div>
+          <button onclick="closeFlashbackModal()" style="position:absolute;top:20px;right:20px;background:rgba(0,0,0,0.5);border:none;color:white;width:40px;height:40px;border-radius:50%;font-size:24px;cursor:pointer;">×</button>
+        </div>
+
+        <div class="profile-card">
+          <div class="profile-avatar">IE</div>
+          <div class="profile-info">
+            <div class="profile-field">
+              <span class="profile-label">Prénom</span>
+              <span class="profile-value">Elias</span>
+            </div>
+            <div class="profile-field">
+              <span class="profile-label">Nom</span>
+              <span class="profile-value">Ivan</span>
+            </div>
+            <div class="profile-field">
+              <span class="profile-label">Numéro</span>
+              <span class="profile-value">+50360108693</span>
+            </div>
+            <div class="profile-field">
+              <span class="profile-label">Adresse Email</span>
+              <span class="profile-value">
+                ivanelias009@gmail.com
+                <span class="check-icon">✓</span>
+              </span>
+            </div>
+            <div class="level-section">
+              <span class="level-text">Niveau 0 <span class="crown-icon">👑</span></span>
+              <div class="level-bar">
+                <div class="level-fill"></div>
+              </div>
+              <button class="upgrade-btn">Mettre à niveau</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="history-card">
+          <div class="history-header">
+            <h3>Historique des transactions</h3>
+            <button class="history-filter">
+              Tous les status
+              <span class="filter-arrow">▼</span>
+            </button>
+          </div>
+          <div class="history-empty">
+            <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+            </svg>
+            <span>Aucune transaction n'a été effectuée</span>
+          </div>
         </div>
       </div>
     </main>
@@ -168,6 +303,90 @@ function handleLogout() {
   localStorage.removeItem('userName');
   localStorage.removeItem('userEmail');
   window.location.href = '/html/iniciar-sesion.html';
+}
+
+function closeProfileModal() {
+  document.getElementById('profileModal').style.display = 'none';
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const flashcardsCard = document.getElementById('flashbacksCard');
+  if (flashcardsCard) {
+    flashcardsCard.addEventListener('click', (e) => {
+      e.preventDefault();
+      document.getElementById('flashbackModal').style.display = 'flex';
+    });
+  }
+
+  const modifierCard = document.getElementById('modifierCard');
+  if (modifierCard) {
+    modifierCard.addEventListener('click', (e) => {
+      e.preventDefault();
+      document.getElementById('profileModal').style.display = 'flex';
+    });
+  }
+
+  const profileForm = document.getElementById('profileForm');
+  if (profileForm) {
+    profileForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const prenom = document.getElementById('editPrenom').value;
+      const nom = document.getElementById('editNom').value;
+      const numero = document.getElementById('editNumero').value;
+      const email = document.getElementById('editEmail').value;
+      localStorage.setItem('userName', prenom + ' ' + nom);
+      localStorage.setItem('userEmail', email);
+      closeProfileModal();
+      render();
+    });
+  }
+});
+
+function closeFlashbackModal() {
+  document.getElementById('flashbackModal').style.display = 'none';
+}
+
+async function telechargerFlashback() {
+  const card = document.getElementById('flashbackCard');
+  if (!card) return;
+  
+  try {
+    const html2canvas = window.html2canvas;
+    if (!html2canvas) {
+      alert('html2canvas not loaded');
+      return;
+    }
+    
+    const canvas = await html2canvas(card, {
+      backgroundColor: '#ffffff',
+      scale: 2
+    });
+    
+    const link = document.createElement('a');
+    link.download = 'flashback-ivan-elias.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  } catch (error) {
+    console.error('Error generating image:', error);
+    alert('Error generating image');
+  }
+}
+
+function partagerFlashback() {
+  const shareData = {
+    title: 'Mi Flashback Flash',
+    url: window.location.href
+  };
+  
+  if (navigator.share) {
+    navigator.share(shareData)
+      .then(() => console.log('Shared successfully'))
+      .catch((err) => console.log('Error sharing:', err));
+  } else {
+    navigator.clipboard.writeText(window.location.href).then(() => {
+      alert('Link copiado!');
+    });
+  }
 }
 
 render();
