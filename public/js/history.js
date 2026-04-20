@@ -23,7 +23,18 @@ let state = {
   lang: localStorage.getItem('lang') || 'fr',
   showUserDropdown: false,
   showLangDropdown: false,
+  transactions: [],
 };
+
+async function loadTransactions() {
+  try {
+    const data = await api.transactions.list();
+    state.transactions = data || [];
+  } catch (error) {
+    console.error('Error loading transactions:', error);
+    state.transactions = [];
+  }
+}
 
 function render() {
   const app = document.getElementById('app');
@@ -143,7 +154,11 @@ function updateDropdowns() {
 function handleLogout() {
   localStorage.removeItem('userName');
   localStorage.removeItem('userEmail');
+  localStorage.removeItem('token');
   window.location.href = '/html/iniciar-sesion.html';
 }
 
-render();
+(async function init() {
+  await loadTransactions();
+  render();
+})();

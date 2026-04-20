@@ -23,13 +23,29 @@ let state = {
   lang: localStorage.getItem('lang') || 'fr',
   showUserDropdown: false,
   showLangDropdown: false,
+  user: null,
+  transactions: { buy: 0, sell: 0 },
+  satsTransactions: 0,
+  momoTransactions: 0,
 };
+
+async function loadUserData() {
+  try {
+    const user = await api.auth.me();
+    state.user = user;
+    const transactions = await api.transactions.list();
+    state.satsTransactions = transactions.filter(t => t.type === 'BUY_BITCOIN' || t.type === 'SELL_BITCOIN').length;
+    state.momoTransactions = transactions.filter(t => t.type === 'MOBILE_MONEY').length;
+  } catch (error) {
+    console.error('Error loading user data:', error);
+  }
+}
 
 function render() {
   const app = document.getElementById('app');
   const currentLang = languages.find(l => l.code === state.lang) || languages[0];
-  const userName = localStorage.getItem('userName') || 'User';
-  const userEmail = localStorage.getItem('userEmail') || 'user@flash.com';
+  const userName = state.user?.name || localStorage.getItem('userName') || 'User';
+  const userEmail = state.user?.email || localStorage.getItem('userEmail') || 'user@flash.com';
   const userInitials = userName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
 
   app.innerHTML = `
@@ -77,13 +93,13 @@ function render() {
         <div class="menu-grid menu-grid-2col">
           <a href="/html/comprar-sats.html" class="menu-card menu-card-sats">
             <h3><div class="menu-icon">${svg.zap}</div> Sats Transactions</h3>
-            <p class="menu-count">0</p>
+            <p class="menu-count">${state.satsTransactions}</p>
             <span class="menu-action">Acheter</span>
           </a>
 
           <a href="/html/comprar-sats.html?vender=1" class="menu-card menu-card-momo">
             <h3><div class="menu-icon">${svg.history}</div> MoMo Transactions</h3>
-            <p class="menu-count">0</p>
+            <p class="menu-count">${state.momoTransactions}</p>
             <span class="menu-action">Vendre</span>
           </a>
         </div>
@@ -299,9 +315,13 @@ function updateDropdowns() {
   if (langDropdown) langDropdown.style.display = state.showLangDropdown ? 'block' : 'none';
 }
 
-function handleLogout() {
+async function handleLogout() {
+  try {
+    await api.auth.logout();
+  } catch (e) {}
   localStorage.removeItem('userName');
   localStorage.removeItem('userEmail');
+  localStorage.removeItem('token');
   window.location.href = '/html/iniciar-sesion.html';
 }
 
@@ -389,4 +409,10 @@ function partagerFlashback() {
   }
 }
 
-render();
+(async function init() {
+  const token = localStorage.getItem('token');
+  if (token) {
+    await loadUserData();
+  }
+  render();
+})();

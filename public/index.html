@@ -11,7 +11,7 @@
 
 <nav>
   <a href="#" class="nav-logo">
-    <img src="flash.png" alt="Flash" class="nav-logo-icon">
+    <img src="/img/flash.png" alt="Flash" class="nav-logo-icon">
     <span class="nav-logo-text">Flash</span>
   </a>
   <ul class="nav-links">
@@ -88,30 +88,7 @@
           <span class="price-pill btc-xof">XOF: --</span>
         </div>
       </div>
-      <div class="wallet-carousel">
-        <div class="carousel-track">
-          <div class="wallet-slide">
-            <div class="wallet-icon-fallback wallet-mtn">🇨🇮</div>
-            <span class="wallet-slide-name">MTN MoMo</span>
-          </div>
-          <div class="wallet-slide">
-            <div class="wallet-icon-fallback wallet-moov">🇧🇫</div>
-            <span class="wallet-slide-name">Moov Money</span>
-          </div>
-          <div class="wallet-slide">
-            <div class="wallet-icon-fallback wallet-celtiis">🇧🇯</div>
-            <span class="wallet-slide-name">Celtiis</span>
-          </div>
-          <div class="wallet-slide">
-            <div class="wallet-icon-fallback wallet-togocel">🇹🇬</div>
-            <span class="wallet-slide-name">Togocel</span>
-          </div>
-        </div>
-      </div>
       <div class="tx-timeline" id="txTimelineHero"></div>
-      <div class="tx-feed-footer">
-        <span class="connection-status" id="connectionStatusHero">Conectando...</span>
-      </div>
     </div>
   </div>
 </section>
@@ -140,73 +117,50 @@
 <section class="section" id="como-funciona">
   <div id="como-funciona-wrapper">
     <div id="map-panel">
-      <svg id="map-svg" viewBox="0 0 480 860" preserveAspectRatio="xMidYMid meet">
-        <rect width="480" height="860" fill="#0f1f30"/>
-        <g fill="none" stroke="#1d3450" stroke-width="1.15">
-          <path d="M -25,10  C 22,-14 88,-6  132,26  C 176,58  186,118 166,154 C 146,190 104,202 64,190  C 24,178  -2,140 -10,100 C -18,66  -44,76  -25,10 Z"/>
-          <path d="M -10,24  C 32,0   88,8   130,38  C 172,68  180,120 162,153 C 144,186 106,196  68,185 C 30,174  6,139   -2,102 C -10,70  -30,84  -10,24 Z"/>
-          <path d="M 6,40    C 44,18  90,26  128,54  C 166,82  172,124 156,152 C 140,180 108,189  72,180 C 36,171  14,138   6,104 C -2,74   -14,92   6,40  Z"/>
-          <path d="M 24,58   C 56,38  92,46  126,70  C 160,94  164,128 150,152 C 136,176 110,183  78,175 C 46,167  24,137  18,106 C 12,80    0,100  24,58  Z"/>
-          <path d="M 44,78   C 70,61  96,68  122,88  C 148,108 150,134 139,152 C 128,170 112,175  84,169 C 56,163  38,135  34,108 C 30,86   22,108  44,78  Z"/>
-          <path d="M 310,5   C 358,-16 428,-6  462,34  C 496,74  494,148 462,178 C 430,208 380,212 346,188 C 312,164 290,118 290,72 C 290,36  272,24  310,5  Z"/>
-          <path d="M 320,18  C 364,0   428,10  460,46  C 492,82  488,150 459,177 C 430,204 382,207 350,186 C 318,165 298,121 298,77 C 298,42  282,34  320,18 Z"/>
-          <path d="M 332,33  C 370,17  428,26  458,59  C 488,92  482,152 456,176 C 430,200 384,202 354,184 C 324,166 306,124 306,83 C 306,50  292,46  332,33 Z"/>
-          <path d="M 346,50  C 378,36  426,46  454,74  C 482,102 474,153 452,174 C 430,195 386,196 358,181 C 330,166 314,127 315,89 C 316,58  304,58  346,50 Z"/>
-          <path d="M 362,69  C 388,57  424,67  450,91  C 476,115 468,154 449,172 C 430,190 390,190 364,177 C 338,164 324,130 326,96 C 328,68  318,72  362,69 Z"/>
-          <path d="M -35,268 C 8,236  76,228  118,258 C 160,288 168,352 144,386 C 120,420 68,428  24,408  C -20,388 -42,340 -44,304 C -46,276 -62,294 -35,268 Z"/>
-          <path d="M -18,282 C 20,252  78,245  117,273 C 156,301 162,356 141,386 C 120,416 70,423  28,405  C -14,387 -34,342 -34,308 C -34,280 -48,304 -18,282 Z"/>
-          <path d="M 0,298   C 34,270  80,264  117,289 C 154,314 158,360 139,386 C 120,412 74,418  34,402  C -6,386  -24,343 -24,312 C -24,285 -34,314  0,298  Z"/>
-          <path d="M 20,316  C 49,291  82,286  116,308 C 150,330 152,364 137,385 C 122,406 78,411  42,397  C 6,383   -12,344 -12,316 C -12,292 -18,324  20,316 Z"/>
-          <path d="M 42,336  C 64,315  86,311  116,329 C 146,347 146,370 134,385 C 122,400 84,403  52,392  C 20,381   4,346   6,320 C 8,300   6,334   42,336 Z"/>
-          <path d="M 302,238 C 350,208 424,212 462,250 C 500,288 498,358 468,386 C 438,414 386,418 350,394 C 314,370 288,322 288,282 C 288,252 266,262 302,238 Z"/>
-          <path d="M 313,252 C 355,224 424,227 460,262 C 496,297 492,360 465,385 C 438,410 388,413 354,391 C 320,369 296,324 296,286 C 296,257 276,273 313,252 Z"/>
-          <path d="M 326,268 C 362,242 424,244 458,275 C 492,306 487,362 463,384 C 439,406 392,408 360,389 C 328,370 306,328 306,291 C 306,264 288,284 326,268 Z"/>
-          <path d="M 341,286 C 371,263 424,265 456,291 C 488,317 482,364 461,383 C 440,402 396,403 366,387 C 336,371 316,332 317,297 C 318,272 302,296 341,286 Z"/>
-          <path d="M 358,306 C 382,286 424,288 453,309 C 482,330 476,365 458,381 C 440,397 400,397 372,384 C 344,371 328,338 330,306 C 332,282 320,312 358,306 Z"/>
-          <path d="M -30,530 C 16,496 92,488  134,520 C 176,552 180,622 152,652 C 124,682 62,688  14,662  C -34,636 -52,582 -48,546 C -44,518 -58,554 -30,530 Z"/>
-          <path d="M -12,544 C 28,512  94,506  134,535 C 174,564 176,626 151,652 C 126,678 66,683  20,659  C -26,635 -42,583 -38,550 C -34,522 -46,568 -12,544 Z"/>
-          <path d="M 8,560   C 42,531  96,526  134,552 C 172,578 172,630 150,652 C 128,674 72,678  28,656  C -16,634 -30,585 -26,554 C -22,527 -32,580  8,560  Z"/>
-          <path d="M 30,578  C 58,552  98,548  134,570 C 170,592 168,634 149,652 C 130,670 78,673  38,653  C -2,633  -16,587 -14,558 C -12,533 -18,590  30,578 Z"/>
-          <path d="M 54,598  C 76,575 102,572  134,590 C 166,608 162,638 147,652 C 132,666 84,668  50,650  C 16,632  4,591   6,564 C 8,542   6,596   54,598 Z"/>
-          <path d="M 316,548 C 362,516 442,518 476,558 C 510,598 508,668 476,696 C 444,724 382,728 344,700 C 306,672 280,622 282,580 C 284,550 274,574 316,548 Z"/>
-          <path d="M 327,562 C 367,532 442,534 474,570 C 506,606 502,669 473,694 C 444,719 384,722 348,697 C 312,672 288,624 290,585 C 292,556 282,587 327,562 Z"/>
-          <path d="M 340,578 C 374,550 442,552 472,584 C 502,616 496,670 470,692 C 444,714 387,716 353,694 C 319,672 297,628 300,591 C 303,563 292,600 340,578 Z"/>
-          <path d="M 355,596 C 384,571 441,572 470,599 C 499,626 492,671 469,690 C 446,709 392,710 360,691 C 328,672 308,632 311,598 C 314,572 326,618 355,596 Z"/>
-          <path d="M 372,616 C 396,594 440,596 467,618 C 494,640 487,672 467,688 C 447,704 398,704 369,688 C 340,672 322,638 325,607 C 328,582 352,636 372,616 Z"/>
-          <path d="M 50,758  C 100,724 188,718 234,754 C 280,790 280,858 250,882 C 220,906 156,908 112,882 C 68,856  38,810  40,774 C 42,748  16,774   50,758 Z"/>
-          <path d="M 65,772  C 110,740 188,735 232,768 C 276,801 274,860 248,881 C 222,902 160,903 118,879 C 76,855  48,812   50,778 C 52,752  24,782   65,772 Z"/>
-          <path d="M 82,788  C 122,758 188,754 230,784 C 272,814 268,862 246,880 C 224,898 164,898 124,876 C 84,854  58,814   60,782 C 62,758  34,790   82,788 Z"/>
-          <path d="M 101,805 C 136,778 188,775 228,801 C 268,827 263,863 244,879 C 225,895 168,894 130,874 C 92,854  70,817   72,787 C 74,765  46,800  101,805 Z"/>
-          <path d="M 122,823 C 152,799 188,797 226,819 C 264,841 258,864 242,877 C 226,890 172,889 138,871 C 104,853  84,820   86,793 C 88,773  62,810  122,823 Z"/>
-          <path d="M 140,442 C 178,416 238,414 270,440 C 302,466 300,514 276,534 C 252,554 212,556 184,534 C 156,512 128,474 132,450 C 136,434 112,464 140,442 Z"/>
-          <path d="M 154,455 C 186,432 238,430 268,453 C 298,476 295,516 274,533 C 253,550 216,551 190,532 C 164,513 138,478 142,456 C 146,440 124,474 154,455 Z"/>
-          <path d="M 170,470 C 196,450 238,449 266,468 C 294,487 290,518 272,532 C 254,546 220,546 196,530 C 172,514 150,483 154,463 C 158,448 146,484 170,470 Z"/>
-          <path d="M 188,487 C 209,470 238,469 264,484 C 290,499 285,520 270,531 C 255,542 224,541 202,528 C 180,515 162,488 166,470 C 170,456 168,494 188,487 Z"/>
-        </g>
-        <path id="path-base" d="M 80 100 C 180 100, 280 150, 240 200 C 200 250, 320 300, 280 350 C 240 400, 340 450, 300 500 C 260 550, 360 600, 320 650 C 280 700, 380 750, 340 800" fill="none" stroke="#2a4a68" stroke-width="2" stroke-dasharray="8 6" stroke-linecap="round"/>
-        <path id="path-progress" d="M 80 100 C 180 100, 280 150, 240 200 C 200 250, 320 300, 280 350 C 240 400, 340 450, 300 500 C 260 550, 360 600, 320 650 C 280 700, 380 750, 340 800" fill="none" stroke="#4dd9c0" stroke-width="3.4" stroke-linecap="round"/>
-        <circle class="step-dot" cx="80" cy="100" r="10" fill="#2a4a68" stroke="#0f1f30" stroke-width="2"/>
-        <circle class="step-dot" cx="240" cy="200" r="10" fill="#2a4a68" stroke="#0f1f30" stroke-width="2"/>
-        <circle class="step-dot" cx="280" cy="350" r="10" fill="#2a4a68" stroke="#0f1f30" stroke-width="2"/>
-        <circle class="step-dot" cx="300" cy="500" r="10" fill="#2a4a68" stroke="#0f1f30" stroke-width="2"/>
-        <circle class="step-dot" cx="320" cy="650" r="10" fill="#2a4a68" stroke="#0f1f30" stroke-width="2"/>
-        <g transform="translate(354, 796)">
-          <defs>
-            <linearGradient id="flg" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#4dd9c0"/>
-              <stop offset="100%" stop-color="#1e8c7a"/>
-            </linearGradient>
-          </defs>
-          <line x1="-52" y1="-20" x2="-34" y2="-20" stroke="#4dd9c0" stroke-width="2.5" stroke-linecap="round" opacity="0.4"/>
-          <line x1="-54" y1="0"   x2="-38" y2="0"   stroke="#4dd9c0" stroke-width="2.2" stroke-linecap="round" opacity="0.32"/>
-          <line x1="-52" y1="20"  x2="-34" y2="20"  stroke="#4dd9c0" stroke-width="2.5" stroke-linecap="round" opacity="0.4"/>
-          <polygon points="-28,-34 -44,2 -32,2 -46,36 -10,-4 -24,-4" fill="#0a3040" opacity="0.5" transform="translate(2,3)"/>
-          <polygon points="-28,-34 -44,2 -32,2 -46,36 -10,-4 -24,-4" fill="url(#flg)" stroke="#0d2a3a" stroke-width="1.6" stroke-linejoin="round"/>
-          <line x1="-29" y1="-27" x2="-40" y2="0" stroke="#a8fff0" stroke-width="1.4" stroke-linecap="round" opacity="0.5"/>
-          <text x="-2" y="8" font-family="Impact,Arial Black,sans-serif" font-size="38" font-weight="900" fill="none" stroke="#0a2030" stroke-width="3" stroke-linejoin="round" letter-spacing="1">FLASH</text>
-          <text x="-2" y="8" font-family="Impact,Arial Black,sans-serif" font-size="38" font-weight="900" fill="url(#flg)" letter-spacing="1">FLASH</text>
-        </g>
-      </svg>
+      <div id="block-mining-container">
+        <div class="bm-header">
+          <div class="bm-header-left">
+            <span class="bm-live-dot"></span>
+            <span class="bm-title">Bitcoin Blockchain</span>
+          </div>
+          <span class="bm-status" id="bmStatus">conectando...</span>
+        </div>
+
+        <div class="bm-chain" id="bmChain"></div>
+
+        <div class="bm-pending-block">
+          <div class="bm-pending-inner">
+            <div class="bm-spinner"></div>
+            <span>minando próximo bloque...</span>
+          </div>
+        </div>
+
+        <div class="bm-mining-bar">
+          <div class="bm-mining-label">
+            <span>Minando bloque siguiente</span>
+            <span id="bmMiningPercent">0%</span>
+          </div>
+          <div class="bm-progress-bar">
+            <div class="bm-progress-fill" id="bmProgressFill"></div>
+          </div>
+          <div class="bm-nonce" id="bmNonce">nonce: 0x0000000000000000</div>
+        </div>
+
+        <div class="bm-stats">
+          <div class="bm-stat-card">
+            <span class="bm-stat-label">Bloque actual</span>
+            <span class="bm-stat-value" id="bmBlockHeight">#--</span>
+          </div>
+          <div class="bm-stat-card">
+            <span class="bm-stat-label">BTC / USD</span>
+            <span class="bm-stat-value" id="bmBtcPrice">$--</span>
+          </div>
+          <div class="bm-stat-card">
+            <span class="bm-stat-label">Mempool</span>
+            <span class="bm-stat-value" id="bmMempool">-- sat/vB</span>
+          </div>
+        </div>
+      </div>
     </div>
     <div id="content-panel">
       <div class="intro-section">
@@ -341,36 +295,43 @@
 <div class="section-separator"></div>
 
 <section class="section" id="faq">
-  <div class="section-label" data-i18n="faq_section_label">Dudas</div>
-  <h2 class="section-title" data-i18n="faq_title">Frequently asked questions</h2>
+  <div class="section-label" data-i18n="faq_section_label">FAQ</div>
+  <h2 class="section-title" data-i18n="faq_title">Questions fréquentes</h2>
   <div class="faq-list">
     <div class="faq-item">
       <div class="faq-q" onclick="toggleFaq(this)">
-        <span data-i18n="faq_q1">What is the minimum purchase amount?</span>
+        <span data-i18n="faq_q1">Quel est le montant minimal d'achat de Bitcoin sur Flash ?</span>
         <span class="faq-icon">+</span>
       </div>
-      <div class="faq-a" data-i18n="faq_a1">You can buy Bitcoin starting from $1 USD or its equivalent in your local currency. No high minimums or restrictions.</div>
+      <div class="faq-a" data-i18n="faq_a1">Le montant minimal est de 100 XOF — c'est notre façon de permettre à chacun de démarrer, même petit.</div>
     </div>
     <div class="faq-item">
       <div class="faq-q" onclick="toggleFaq(this)">
-        <span data-i18n="faq_q2">How long does it take for my Bitcoin to arrive?</span>
+        <span data-i18n="faq_q2">Puis-je acheter ou vendre des bitcoins On-chain sur Flash ?</span>
         <span class="faq-icon">+</span>
       </div>
-      <div class="faq-a" data-i18n="faq_a2">With Lightning Network the transaction is instantaneous (under 5 seconds). Standard on-chain transactions take between 10 and 30 minutes.</div>
+      <div class="faq-a" data-i18n="faq_a2">Pas pour le moment. Les transactions On-chain seront disponibles très bientôt — nous finalisons les derniers détails techniques.</div>
     </div>
     <div class="faq-item">
       <div class="faq-q" onclick="toggleFaq(this)">
-        <span data-i18n="faq_q3">What payment methods do you accept?</span>
+        <span data-i18n="faq_q3">Puis-je utiliser Flash pour envoyer du Bitcoin à quelqu'un ?</span>
         <span class="faq-icon">+</span>
       </div>
-      <div class="faq-a" data-i18n="faq_a3">We accept Visa and Mastercard credit/debit cards, local bank transfers, cash at authorized locations and Lightning Network payments.</div>
+      <div class="faq-a" data-i18n="faq_a3">Oui. Il vous suffit d'indiquer l'adresse Bitcoin de la personne au moment de l'achat, et celle-ci recevra directement les fonds sur son portefeuille. Flash facilite ainsi les transferts de Bitcoin, que ce soit pour un proche, un partenaire ou un paiement professionnel.</div>
     </div>
     <div class="faq-item">
       <div class="faq-q" onclick="toggleFaq(this)">
-        <span data-i18n="faq_q4">What is Flash's commission?</span>
+        <span data-i18n="faq_q4">Puis-je bénéficier de notre service partout en Afrique ?</span>
         <span class="faq-icon">+</span>
       </div>
-      <div class="faq-a" data-i18n="faq_a4">We charge a fixed 1.5% commission per transaction. No hidden fees or monthly maintenance charges.</div>
+      <div class="faq-a" data-i18n="faq_a4">Pas encore. Flash est actuellement disponible au Bénin, au Togo, au Burkina Faso et en Côte d'Ivoire. Nous travaillons à élargir notre présence afin de rendre nos services accessibles dans d'autres pays d'Afrique très prochainement.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        <span data-i18n="faq_q5">Puis-je payer un commerçant par Mobile Money en utilisant Flash ?</span>
+        <span class="faq-icon">+</span>
+      </div>
+      <div class="faq-a" data-i18n="faq_a5">Oui. C'est l'une des fonctionnalités les plus pratiques de Flash. Il vous suffit de saisir le numéro Mobile Money du commerçant au moment de la vente de vos bitcoins. Flash se charge automatiquement de la conversion et le commerçant reçoit le montant équivalent en monnaie locale sur son compte Mobile Money.</div>
     </div>
   </div>
 </section>

@@ -357,6 +357,12 @@ function showLightningInfo() {
 document.addEventListener('DOMContentLoaded', async () => {
   state.lang = localStorage.getItem('lang') || 'fr';
   document.documentElement.lang = state.lang;
+  
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('vender') === '1') {
+    state.activeTab = 'sell';
+  }
+  
   await loadTranslations(state.lang);
   render();
 });

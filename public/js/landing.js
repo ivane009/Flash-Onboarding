@@ -31,31 +31,36 @@ function toggleFaq(el) {
 
 async function fetchMempoolData() {
   try {
-    const [pricesRes, blockRes, feesRes] = await Promise.all([
-      fetch('https://mempool.space/api/v1/prices'),
-      fetch('https://mempool.space/api/blocks/tip/height'),
-      fetch('https://mempool.space/api/v1/fees/recommended')
+    const [pricesRes, blockRes] = await Promise.all([
+      fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd,eur'),
+      fetch('https://blockchain.info/q/getblockcount')
     ]);
 
     const prices = await pricesRes.json();
     const blockHeight = await blockRes.text();
-    const fees = await feesRes.json();
+    const usdPrice = prices.bitcoin?.usd || 83000;
 
     // Update ticker
-    document.getElementById('btc-usd').textContent = '$' + prices.USD.toLocaleString();
-    document.getElementById('btc-eur').textContent = '€' + prices.EUR.toLocaleString();
-    document.getElementById('btc-block').textContent = '#' + parseInt(blockHeight).toLocaleString();
-    document.getElementById('btc-fees').textContent = fees.fastestFee + ' sat/vB';
+    const btcUsdEl = document.getElementById('btc-usd');
+    const btcEurEl = document.getElementById('btc-eur');
+    const btcBlockEl = document.getElementById('btc-block');
+    const btcPriceEl = document.getElementById('btc-price');
+    const btcFeesEl = document.getElementById('btc-fees');
+    if (btcUsdEl) btcUsdEl.textContent = '$' + usdPrice.toLocaleString();
+    if (btcEurEl) btcEurEl.textContent = '€' + (prices.bitcoin?.eur || 76000).toLocaleString();
+    if (btcBlockEl) btcBlockEl.textContent = '#' + parseInt(blockHeight).toLocaleString();
+    if (btcPriceEl) btcPriceEl.textContent = '$' + usdPrice.toLocaleString();
+    if (btcFeesEl) btcFeesEl.textContent = '10';
 
     // Update widget prices
     const widgetBtcUsd = document.querySelector('.btc-usd');
     const widgetBtcXof = document.querySelector('.btc-xof');
-    if (widgetBtcUsd) widgetBtcUsd.textContent = `BTC: $${prices.USD.toLocaleString()}`;
-    if (widgetBtcXof) widgetBtcXof.textContent = `XOF: ${(prices.USD * 655).toLocaleString()}`;
+    if (widgetBtcUsd) widgetBtcUsd.textContent = `BTC: $${usdPrice.toLocaleString()}`;
+    if (widgetBtcXof) widgetBtcXof.textContent = `XOF: ${(usdPrice * 655).toLocaleString()}`;
 
     // Save prices for transaction calculations
-    currentPrice.usd = prices.USD;
-    currentPrice.xof = prices.USD * 655;
+    currentPrice.usd = usdPrice;
+    currentPrice.xof = usdPrice * 655;
   } catch (error) {
     console.error('Error fetching mempool data:', error);
   }
@@ -284,53 +289,57 @@ function disconnectMempool() {
 
 function connectMempool() {
   if (!isPageVisible || mempoolWs) return;
-  if (reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) return;
+  if (reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
+    startFallbackMode();
+    return;
+  }
   
-  mempoolWs = new WebSocket(MEMPOOL_WS);
-  
-  mempoolWs.onopen = () => {
-    reconnectAttempts = 0;
-    const statusEl = document.getElementById('connectionStatusHero');
-    if (statusEl) {
-      statusEl.textContent = 'Conectado • Mempool';
-      statusEl.style.color = '#22c55e';
-    }
-    mempoolWs.send(JSON.stringify({ action: 'subscribe', data: 'mempool' }));
-  };
-  
-  mempoolWs.onmessage = (event) => {
-    try {
-      const data = JSON.parse(event.data);
-      if (data.txid && data.vout) {
-        const totalValue = data.vout.reduce((sum, out) => sum + (out.value || 0), 0);
-        addTransaction({ txid: data.txid, value: totalValue, fee: data.fee || 0 });
+  try {
+    mempoolWs = new WebSocket(MEMPOOL_WS);
+    
+    mempoolWs.onopen = () => {
+      reconnectAttempts = 0;
+      const statusEl = document.getElementById('connectionStatusHero');
+      if (statusEl) {
+        statusEl.textContent = 'Conectado • Mempool';
+        statusEl.style.color = '#22c55e';
       }
-    } catch (e) {}
-  };
-  
-  mempoolWs.onerror = () => {
-    reconnectAttempts++;
-    const statusEl = document.getElementById('connectionStatusHero');
-    if (statusEl) {
-      statusEl.textContent = 'Error de conexión';
-      statusEl.style.color = '#f59e0b';
-    }
-    if (!fallbackInterval && isPageVisible) {
-      startFallbackMode();
-    }
-  };
-  
-  mempoolWs.onclose = () => {
-    mempoolWs = null;
-    const statusEl = document.getElementById('connectionStatusHero');
-    if (statusEl) {
-      statusEl.textContent = 'Reconectando...';
-      statusEl.style.color = '#ef4444';
-    }
-    if (isPageVisible && reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
-      setTimeout(connectMempool, 15000);
-    }
-  };
+      try { mempoolWs.send(JSON.stringify({ action: 'subscribe', data: 'mempool' })); } catch(e) {}
+    };
+    
+    mempoolWs.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        if (data.txid && data.vout) {
+          const totalValue = data.vout.reduce((sum, out) => sum + (out.value || 0), 0);
+          addTransaction({ txid: data.txid, value: totalValue, fee: data.fee || 0 });
+        }
+      } catch (e) {}
+    };
+    
+    mempoolWs.onerror = () => {
+      reconnectAttempts++;
+      const statusEl = document.getElementById('connectionStatusHero');
+      if (statusEl) {
+        statusEl.textContent = 'Demo modo';
+        statusEl.style.color = '#f59e0b';
+      }
+      if (!fallbackInterval && isPageVisible) {
+        startFallbackMode();
+      }
+    };
+    
+    mempoolWs.onclose = () => {
+      mempoolWs = null;
+      if (isPageVisible && reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
+        setTimeout(connectMempool, 15000);
+      } else if (isPageVisible) {
+        startFallbackMode();
+      }
+    };
+  } catch (e) {
+    startFallbackMode();
+  }
 }
 
 function startFallbackMode() {
@@ -415,4 +424,181 @@ document.addEventListener('visibilitychange', () => {
     }
     connectMempool();
   }
+});
+
+// === BLOCK MINING ANIMATION ===
+const MAX_VISIBLE_BLOCKS = 5;
+let blockData = {
+  currentHeight: 893421,
+  blocks: [],
+  btcPrice: 0,
+  mempoolFee: 0,
+  miningProgress: 0,
+  currentNonce: 0
+};
+
+function formatHash(hash) {
+  if (!hash) return '0000000000000000';
+  return hash.slice(0, 8) + '...';
+}
+
+function timeAgo(timestamp) {
+  if (!timestamp) return '0m ago';
+  const seconds = Math.floor((Date.now() / 1000) - timestamp);
+  if (seconds < 60) return seconds + 's ago';
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return minutes + 'm ago';
+  const hours = Math.floor(minutes / 60);
+  return hours + 'h ago';
+}
+
+function createBlockElement(block, isLatest) {
+  const div = document.createElement('div');
+  div.className = 'bm-block ' + (isLatest ? 'latest' : 'old');
+  div.innerHTML = `
+    <div class="bm-block-icon"></div>
+    <div class="bm-block-info">
+      <span class="bm-block-number">#${block.height.toLocaleString()}</span>
+      <span class="bm-block-hash">${formatHash(block.hash)}</span>
+      <span class="bm-block-time">${timeAgo(block.time)}</span>
+    </div>
+  `;
+  return div;
+}
+
+function renderBlocks() {
+  const chain = document.getElementById('bmChain');
+  if (!chain) return;
+  chain.innerHTML = '';
+  
+  const visibleBlocks = blockData.blocks.slice(0, MAX_VISIBLE_BLOCKS);
+  visibleBlocks.forEach((block, index) => {
+    if (index > 0) {
+      const connector = document.createElement('div');
+      connector.className = 'bm-connector';
+      chain.appendChild(connector);
+    }
+    const isLatest = index === 0;
+    const blockEl = createBlockElement(block, isLatest);
+    blockEl.style.animationDelay = (index * 0.1) + 's';
+    chain.appendChild(blockEl);
+  });
+}
+
+function updateStats() {
+  const blockEl = document.getElementById('bmBlockHeight');
+  const priceEl = document.getElementById('bmBtcPrice');
+  const mempoolEl = document.getElementById('bmMempool');
+  
+  if (blockEl) blockEl.textContent = '#' + blockData.currentHeight.toLocaleString();
+  if (priceEl) priceEl.textContent = '$' + blockData.btcPrice.toLocaleString();
+  if (mempoolEl) mempoolEl.textContent = blockData.mempoolFee + ' sat/vB';
+}
+
+function updateMiningBar() {
+  const percentEl = document.getElementById('bmMiningPercent');
+  const fillEl = document.getElementById('bmProgressFill');
+  const nonceEl = document.getElementById('bmNonce');
+  
+  if (percentEl) percentEl.textContent = blockData.miningProgress + '%';
+  if (fillEl) fillEl.style.width = blockData.miningProgress + '%';
+  if (nonceEl) nonceEl.textContent = 'nonce: 0x' + blockData.currentNonce.toString(16).padStart(16, '0');
+}
+
+async function fetchBlockchainData() {
+  try {
+    const [blockRes, priceRes, mempoolRes] = await Promise.all([
+      fetch('https://blockchain.info/latestblock'),
+      fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd'),
+      fetch('https://mempool.space/api/v1/fees/recommended')
+    ]);
+    
+    const blockData_json = await blockRes.json();
+    const priceData = await priceRes.json();
+    const mempoolData = await mempoolRes.json();
+    
+    const newHeight = blockData_json.height;
+    
+    if (newHeight !== blockData.currentHeight) {
+      blockData.currentHeight = newHeight;
+      
+      const newBlock = {
+        height: newHeight,
+        hash: blockData_json.hash,
+        time: blockData_json.time
+      };
+      
+      blockData.blocks.unshift(newBlock);
+      if (blockData.blocks.length > MAX_VISIBLE_BLOCKS + 2) {
+        blockData.blocks.pop();
+      }
+      
+      renderBlocks();
+    }
+    
+    blockData.btcPrice = priceData.bitcoin?.usd || 75692;
+    blockData.mempoolFee = mempoolData.fastestFee || 10;
+    
+    updateStats();
+    
+    const statusEl = document.getElementById('bmStatus');
+    if (statusEl) statusEl.textContent = 'en vivo';
+    
+  } catch (error) {
+    console.warn('Error fetching blockchain data:', error);
+    
+    if (blockData.blocks.length === 0) {
+      for (let i = 0; i < 5; i++) {
+        blockData.blocks.push({
+          height: blockData.currentHeight - i,
+          hash: '0000000000000000000000000000000000000000000000000000000000000000',
+          time: Math.floor(Date.now() / 1000) - (i * 600)
+        });
+      }
+      renderBlocks();
+    }
+  }
+}
+
+function animateMining() {
+  blockData.miningProgress = (blockData.miningProgress + Math.random() * 2) % 100;
+  blockData.currentNonce = Math.floor(Math.random() * 0xFFFFFFFFFFFFFFFF);
+  updateMiningBar();
+  
+  if (blockData.miningProgress > 95) {
+    blockData.miningProgress = 0;
+    blockData.currentHeight++;
+    
+    blockData.blocks.unshift({
+      height: blockData.currentHeight,
+      hash: Array(64).fill(0).map(() => Math.floor(Math.random() * 16).toString(16)).join(''),
+      time: Math.floor(Date.now() / 1000)
+    });
+    
+    if (blockData.blocks.length > MAX_VISIBLE_BLOCKS + 2) {
+      blockData.blocks.pop();
+    }
+    
+    renderBlocks();
+    updateStats();
+  }
+}
+
+function initBlockMining() {
+  fetchBlockchainData();
+  
+  setInterval(fetchBlockchainData, 30000);
+  
+  setInterval(() => {
+    blockData.btcPrice = blockData.btcPrice || 75692;
+    const priceChange = (Math.random() - 0.5) * 100;
+    blockData.btcPrice = Math.max(70000, blockData.btcPrice + priceChange);
+    updateStats();
+  }, 60000);
+  
+  setInterval(animateMining, 500);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initBlockMining();
 });

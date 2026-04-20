@@ -87,6 +87,8 @@ function render() {
             <h2 class="left-title">L'accès au Bitcoin n'a jamais été aussi simple !</h2>
             <p class="left-subtitle">Achetez puis vendez des Sats en toute sécurité à un prix compétitif.</p>
             
+            <img src="/img/log.png" alt="Flash Logo" style="width:180px;margin:20px auto;display:block;" />
+
             <div class="feature">
               <div class="feature-icon">${svg.shield}</div>
               <span>100% sécurisé et protégé</span>

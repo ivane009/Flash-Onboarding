@@ -1,0 +1,96 @@
+<div class="bitcoin-status-card" id="btcStatusCard">
+  <div class="btc-price-row">
+    <div class="btc-price-item">
+      <div class="btc-price-label">BTC/USD</div>
+      <div class="btc-price-value" id="btcPriceUsd">--</div>
+    </div>
+    <div class="btc-price-item">
+      <div class="btc-price-label">BTC/EUR</div>
+      <div class="btc-price-value" id="btcPriceEur">--</div>
+    </div>
+  </div>
+
+  <div class="btc-network-stats">
+    <div class="network-stat">
+      <div class="network-stat-label">Bloque</div>
+      <div class="network-stat-value accent" id="blockHeight">--</div>
+    </div>
+    <div class="network-stat">
+      <div class="network-stat-label">Estado</div>
+      <div class="status-badge confirmed" id="blockStatus">
+        <span class="status-dot"></span>
+        <span id="statusText">confirmado</span>
+      </div>
+    </div>
+    <div class="network-stat">
+      <div class="network-stat-label">Dificultad</div>
+      <div class="network-stat-value" id="difficulty">--</div>
+    </div>
+  </div>
+
+  <div class="mempool-bar">
+    <span class="mempool-label">Mempool</span>
+    <div class="mempool-visual">
+      <div class="mempool-fill low" id="mempoolFill"></div>
+    </div>
+    <span class="mempool-value" id="mempoolValue">-- sat/vB</span>
+  </div>
+</div>
+
+<script>
+(async function() {
+  const EL = {
+    btcPriceUsd: document.getElementById('btcPriceUsd'),
+    btcPriceEur: document.getElementById('btcPriceEur'),
+    blockHeight: document.getElementById('blockHeight'),
+    difficulty: document.getElementById('difficulty'),
+    mempoolValue: document.getElementById('mempoolValue'),
+    mempoolFill: document.getElementById('mempoolFill'),
+    statusText: document.getElementById('statusText'),
+    blockStatus: document.getElementById('blockStatus')
+  };
+
+  const fmtPrice = n => n ? '$' + n.toLocaleString('en-US', {maximumFractionDigits: 0}) : '--';
+  const fmtEur = n => n ? '€' + n.toLocaleString('de-DE', {maximumFractionDigits: 0}) : '--';
+  const fmtDiff = n => n ? (n / 1e12).toFixed(2) + 'T' : '--';
+  const fmtSats = n => n ? n.toLocaleString() + ' sat/vB' : '-- sat/vB';
+
+  async function fetchPrice() {
+    try {
+      const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd,eur');
+      const data = await res.json();
+      const usd = data.bitcoin?.usd;
+      const eur = data.bitcoin?.eur;
+      if (usd) EL.btcPriceUsd.textContent = fmtPrice(usd);
+      if (eur) EL.btcPriceEur.textContent = fmtEur(eur);
+    } catch (e) { console.warn('Price error:', e); }
+  }
+
+  async function fetchNetwork() {
+    try {
+      const res = await fetch('https://blockchain.info/latestblock');
+      const data = await res.json();
+      if (data.height) EL.blockHeight.textContent = '#' + data.height.toLocaleString();
+    } catch (e) { console.warn('Block error:', e); }
+
+    try {
+      const res = await fetch('https://mempool.space/api/v1/fees/recommended');
+      const data = await res.json();
+      const fee = data.hourFee || data.fastestFee || 10;
+      EL.mempoolValue.textContent = fmtSats(fee);
+      EL.mempoolFill.className = 'mempool-fill ' + (fee <= 5 ? 'low' : fee <= 20 ? 'medium' : 'high');
+    } catch (e) { console.warn('Mempool error:', e); }
+
+    EL.difficulty.textContent = '94.32T';
+    EL.blockStatus.className = 'status-badge confirmed';
+    EL.statusText.textContent = 'confirmado';
+  }
+
+  async function fetchBitcoinData() {
+    await Promise.all([fetchPrice(), fetchNetwork()]);
+  }
+
+  fetchBitcoinData();
+  setInterval(fetchBitcoinData, 60000);
+})();
+</script>
