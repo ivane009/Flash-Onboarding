@@ -1,7 +1,9 @@
 import i18next from 'i18next';
 import { countries } from 'countries-list';
 
-const API_BASE = 'https://staging.bitcoinflash.xyz/api/v1';
+const API_BASE = window.location.hostname === 'localhost' 
+  ? 'http://localhost:3001/api/v1' 
+  : 'https://staging.bitcoinflash.xyz/api/v1';
 
 const state = {
   step: 0, totalSteps: 6, userId: null, jwtToken: null,
@@ -630,15 +632,28 @@ async function doRegister() {
   const btn = document.getElementById('btnRegister');
   if (btn) { btn.textContent = t('btn_creating'); btn.disabled = true; }
 
-  // Simulación: guardar datos y avanzar
-  state.form = { ...state.form, name: first, email, password: pass, whatsapp, country };
-  state.userId = 'demo-user-123';
-
-  await new Promise(r => setTimeout(r, 800)); // pequeño delay para que se sienta real
-
-  showToast(t('toast_created'), 'success');
-  state.step = 2;
-  renderStep();
+  try {
+    const response = await apiPost('/auth/register', {
+      name: `${first} ${last}`,
+      email,
+      password: pass,
+      password_confirmation: pass2,
+      whatsapp,
+      country
+    });
+    state.form = { ...state.form, name: first, email, password: pass, whatsapp, country };
+    state.userId = response.data?.user?.id;
+    localStorage.setItem('pending_user_email', email);
+    if (response.data?.user?.id) {
+      localStorage.setItem('pending_user_id', response.data.user.id);
+    }
+    showToast(t('toast_created'), 'success');
+    state.step = 2;
+    renderStep();
+  } catch (err) {
+    showToast(err.data?.message || err.message || t('toast_created_error') || 'Error al crear cuenta');
+    if (btn) { btn.textContent = t('btn_register'); btn.disabled = false; }
+  }
 }
 
 async function doVerifyOTP() {
@@ -648,10 +663,17 @@ async function doVerifyOTP() {
   const btn = document.getElementById('btnVerify');
   if (btn) { btn.textContent = t('btn_verifying'); btn.disabled = true; }
 
-  await new Promise(r => setTimeout(r, 800));
-
-  showToast(t('toast_verified'), 'success');
-  nextStep();
+  try {
+    const email = state.form.email || localStorage.getItem('pending_user_email');
+    await apiPost('/auth/verify-otp', { email, code });
+    showToast(t('toast_verified'), 'success');
+    localStorage.removeItem('pending_user_email');
+    localStorage.removeItem('pending_user_id');
+    nextStep();
+  } catch (err) {
+    showToast(err.data?.message || err.message || 'Código inválido');
+    if (btn) { btn.textContent = t('btn_verify'); btn.disabled = false; }
+  }
 }
 
 async function doLogin() {
@@ -664,17 +686,36 @@ async function doLogin() {
   const btn = document.getElementById('btnLogin');
   if (btn) { btn.textContent = t('btn_logging') || 'Iniciando sesión...'; btn.disabled = true; }
 
-  state.form = { ...state.form, email, password: pass };
-  await new Promise(r => setTimeout(r, 800));
-
-  showToast(t('toast_logged') || 'Sesión iniciada', 'success');
-  state.step = 1;
-  renderStep();
+  try {
+    const response = await apiPost('/auth/login', { email, password });
+    state.jwtToken = response.data?.token;
+    state.form = { ...state.form, email, password: pass };
+    if (response.data?.user) {
+      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('userName', response.data.user.name);
+      localStorage.setItem('userEmail', response.data.user.email);
+    }
+    showToast(t('toast_logged') || 'Sesión iniciada', 'success');
+    state.step = 1;
+    renderStep();
+  } catch (err) {
+    showToast(err.data?.message || err.message || 'Error al iniciar sesión');
+    if (btn) { btn.textContent = t('btn_login') || 'Iniciar sesión'; btn.disabled = false; }
+  }
 }
 
 async function doResendOTP() {
-  await new Promise(r => setTimeout(r, 500));
-  showToast(t('toast_resent'), 'success');
+  try {
+    const email = state.form.email || localStorage.getItem('pending_user_email');
+    if (!email) {
+      showToast('Sesión expirada');
+      return;
+    }
+    await apiPost('/auth/regenerate-otp', { email });
+    showToast(t('toast_resent'), 'success');
+  } catch (err) {
+    showToast(err.data?.message || err.message || 'Error al reenviar código');
+  }
 }
 
 /* ══════════════════════════════════════════════

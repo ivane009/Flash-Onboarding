@@ -44,8 +44,8 @@ function showSuccessModal(email) {
     <div class="modal-card">
       <div class="modal-icon">✓</div>
       <h2 data-i18n="cuenta_creada">${t('cuenta_creada')}</h2>
-      <p data-i18n="codigo_enviado">${t('codigo_enviado')}</p>
-      <p class="modal-email">${email}</p>
+      <p data-i18n="codigo_enviado">Código de verificación (demo):</p>
+      <p class="modal-email" style="font-size:24px; font-weight:bold; color:#4ade80;">123456</p>
       <a href="/html/verificar-codigo.html" class="btn btn-primary" data-i18n="verificar_codigo_btn">${t('verificar_codigo_btn')}</a>
     </div>
   `;
@@ -53,7 +53,7 @@ function showSuccessModal(email) {
   applyTranslations();
   setTimeout(() => {
     window.location.href = '/html/verificar-codigo.html';
-  }, 5000);
+  }, 10000);
 }
 
 let modalEl = null;
@@ -302,7 +302,7 @@ function showToast(msg, type = 'error') {
   }, 4000);
 }
 
-function doRegister() {
+async function doRegister() {
   const first = document.getElementById('f-firstname')?.value.trim();
   const last = document.getElementById('f-lastname')?.value.trim();
   const email = document.getElementById('f-email')?.value.trim();
@@ -336,9 +336,41 @@ function doRegister() {
   const btn = document.getElementById('btnRegister');
   if (btn) { btn.textContent = t('creando_cuenta'); btn.disabled = true; }
 
-  setTimeout(() => {
+  // Check if user already exists
+  const existingUser = localStorage.getItem('flash_user');
+  if (existingUser) {
+    const existing = JSON.parse(existingUser);
+    if (existing.email === email) {
+      alert('Este email ya está registrado. Usa el login.');
+      if (btn) { btn.textContent = t('btn_crear_cuenta'); btn.disabled = false; }
+      return;
+    }
+  }
+
+  try {
+    // Store user data in localStorage (simulating backend storage)
+    const userData = {
+      name: `${first} ${last}`,
+      email,
+      password: pass,
+      whatsapp: phoneInstance ? phoneInstance.getNumber() : '',
+      country: state.form.country || 'BJ',
+      createdAt: new Date().toISOString()
+    };
+    localStorage.setItem('flash_user', JSON.stringify(userData));
+    localStorage.setItem('pending_user_email', email);
+    
+    // Generate mock OTP for demo
+    const mockOTP = '123456';
+    localStorage.setItem('pending_otp', mockOTP);
+    console.log('[REGISTER] Demo OTP:', mockOTP);
+    alert('¡Cuenta creada! Código OTP: 123456 (demo)');
+    
     showSuccessModal(email);
-  }, 800);
+  } catch (error) {
+    alert(error.message || 'Registration failed');
+    if (btn) { btn.textContent = t('btn_crear_cuenta'); btn.disabled = false; }
+  }
 }
 
 document.addEventListener('DOMContentLoaded', async () => {

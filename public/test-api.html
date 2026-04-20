@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>API Test - Production</title>
+</head>
+<body>
+  <h1>Production API Test</h1>
+  <div id="results"></div>
+  <script>
+    const results = document.getElementById('results');
+    const API_BASE = 'https://staging.bitcoinflash.xyz/api/v1';
+    
+    async function testAPI() {
+      const tests = [
+        { 
+          name: 'PRODUCTION Login', 
+          url: API_BASE + '/auth/login', 
+          method: 'POST', 
+          body: { 
+            email: 'ivanelias009@gmail.com', 
+            password: 'gohanpicoro'
+          } 
+        },
+      ];
+      
+      for (const test of tests) {
+        try {
+          results.innerHTML += `<p>Testing: ${test.name}</p>`;
+          results.innerHTML += `<p>URL: ${test.url}</p>`;
+          const response = await fetch(test.url, {
+            method: test.method,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(test.body)
+          });
+          results.innerHTML += `<p>Status: ${response.status}</p>`;
+          const data = await response.json();
+          results.innerHTML += `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+          
+          if (data.success && data.data?.token) {
+            results.innerHTML += `<p style="color:green">✓ LOGIN SUCCESS!</p>`;
+            localStorage.setItem('token', data.data.token);
+          } else if (data.message) {
+            results.innerHTML += `<p style="color:orange">Message: ${data.message}</p>`;
+          }
+        } catch (error) {
+          results.innerHTML += `<p style="color:red">✗ Error: ${error.message}</p>`;
+          results.innerHTML += `<p>¿CORS error? Check console (F12)</p>`;
+        }
+      }
+    }
+    
+    testAPI();
+  </script>
+</body>
+</html>

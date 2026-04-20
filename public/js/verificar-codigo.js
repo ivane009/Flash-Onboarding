@@ -57,19 +57,58 @@ function checkAllFilled() {
   }
 }
 
-function doVerify() {
+async function doVerify() {
   const code = [1,2,3,4,5,6].map(i => document.getElementById('code' + i)?.value).join('');
   if (code.length !== 6) {
     alert('Ingresa el código completo');
     return;
   }
+  
+  const email = localStorage.getItem('pending_user_email');
+  if (!email) {
+    alert('Sesión expirada. Por favor regístrate de nuevo.');
+    window.location.href = '/html/crear-cuenta.html';
+    return;
+  }
+  
+  const storedOTP = localStorage.getItem('pending_otp') || '123456';
+  
   const btn = document.getElementById('btnVerify');
   btn.textContent = 'Verificando...';
   btn.disabled = true;
   
-  setTimeout(() => {
+  // Simulate verification delay
+  await new Promise(r => setTimeout(r, 800));
+  
+  if (code === storedOTP) {
+    // Mark user as verified
+    const userStr = localStorage.getItem('flash_user');
+    if (userStr) {
+      const user = JSON.parse(userStr);
+      user.verified = true;
+      localStorage.setItem('flash_user', JSON.stringify(user));
+    }
+    localStorage.removeItem('pending_user_email');
+    localStorage.removeItem('pending_otp');
+    alert('¡Email verificado exitosamente!');
     window.location.href = '/html/iniciar-sesion.html';
-  }, 1000);
+  } else {
+    alert('Código inválido. Intenta de nuevo.');
+    btn.textContent = 'Verificar';
+    btn.disabled = false;
+  }
 }
 
 document.addEventListener('DOMContentLoaded', initDOM);
+
+document.addEventListener('DOMContentLoaded', () => {
+  const resendBtn = document.getElementById('resendBtn');
+  if (resendBtn) {
+    resendBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const otp = localStorage.getItem('pending_otp') || '123456';
+      alert('Código reenviado. (Para demo: ' + otp + ')');
+      console.log('[OTP] Demo code:', otp);
+    });
+  }
+});

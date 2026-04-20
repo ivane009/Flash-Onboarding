@@ -14,8 +14,8 @@ const svg = {
   check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>',
   mail: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 6l-10 7L2 6"/></svg>',
   lock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>',
-  eye: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12 C 5 -4, 19 -4, 23 12 C 19 20, 5 20, 1 12 Z"/><circle cx="12" cy="12" r="3"/></svg>',
-  eyeOff: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>',
+  eye: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#94a3b8" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>',
+  eyeOff: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#94a3b8" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>',
   chevronLeft: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>',
   globe: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>',
 };
@@ -91,18 +91,13 @@ function render() {
           <div class="card-left">
             <h2 class="left-title" data-i18n="login_left_title">${t('login_left_title')}</h2>
             <p class="left-subtitle" data-i18n="login_left_subtitle">${t('login_left_subtitle')}</p>
-            
-            <div class="feature">
-              <div class="feature-icon">${svg.shield}</div>
-              <span data-i18n="login_feature_secure">${t('login_feature_secure')}</span>
-            </div>
-            <div class="feature">
-              <div class="feature-icon">${svg.sparkles}</div>
-              <span data-i18n="login_feature_instant">${t('login_feature_instant')}</span>
-            </div>
-            <div class="feature">
-              <div class="feature-icon">${svg.check}</div>
-              <span data-i18n="login_feature_no_fee">${t('login_feature_no_fee')}</span>
+
+            <img src="/img/log.png" alt="Flash Logo" style="width:240px;margin:12px auto;display:block;" />
+
+            <div class="small-features">
+              <span>${svg.shield} 100% sécurisé et protégé</span>
+              <span>${svg.sparkles} Transaction instantanée</span>
+              <span>${svg.check} Sans commission cachée</span>
             </div>
           </div>
 
@@ -132,13 +127,50 @@ function render() {
               ${t('btn_login')}
             </button>
 
-            <p class="text-center text-muted mt-6">
-              <span data-i18n="no_account">${t('no_account')}</span> <a href="/html/crear-cuenta.html" class="link" data-i18n="create_account">${t('create_account')}</a>
-            </p>
+            <div class="form-links">
+              <a href="#" class="form-link" id="forgotPasswordLink" data-i18n="forgot_password_reset">${t('forgot_password_reset')}</a>
+              <a href="#" class="form-link" data-i18n="activate_account">${t('activate_account')}</a>
+              <a href="/html/crear-cuenta.html" class="form-link" data-i18n="no_account_signup">${t('no_account_signup')}</a>
+            </div>
+
+            
           </div>
         </div>
       </div>
     </main>
+
+    <div id="resetPasswordModal" class="modal-overlay" style="display:none;">
+      <div class="modal-card" id="resetModalContent">
+        <div class="modal-icon">🔑</div>
+        <h2 data-i18n="reset_password_title">${t('reset_password_title')}</h2>
+        <div id="resetStep1">
+          <div class="form-group" style="margin-top:16px;">
+            <label data-i18n="label_email">${t('label_email')}</label>
+            <input type="email" id="resetEmail" class="input" placeholder="kofi@example.com" style="width:100%;padding:12px;border-radius:8px;border:1px solid rgba(100,116,139,0.3);background:rgba(30,41,59,0.8);color:#fff;font-size:14px;outline:none;"/>
+          </div>
+          <button class="btn btn-primary btn-full" onclick="sendResetCode()" style="margin-top:12px;" data-i18n="btn_reset_password">${t('btn_reset_password')}</button>
+        </div>
+        <div id="resetStep2" style="display:none;">
+          <p id="resetEmailDisplay" style="color:var(--text-muted);font-size:13px;margin-bottom:16px;text-align:center;"></p>
+          <div class="form-group">
+            <label data-i18n="reset_code_label">${t('reset_code_label')}</label>
+            <input type="text" id="resetCode" class="input" placeholder="Entrez le code reçu" style="width:100%;padding:12px;border-radius:8px;border:1px solid rgba(100,116,139,0.3);background:rgba(30,41,59,0.8);color:#fff;font-size:14px;outline:none;"/>
+          </div>
+          <div class="form-group" style="position:relative;">
+            <label data-i18n="new_password_label">${t('new_password_label')}</label>
+            <input type="password" id="newPassword" class="input" placeholder="Nouveau mot de passe" style="width:100%;padding:12px;padding-right:40px;border-radius:8px;border:1px solid rgba(100,116,139,0.3);background:rgba(30,41,59,0.8);color:#fff;font-size:14px;outline:none;"/>
+            <button type="button" onclick="toggleResetPassword('newPassword', 'toggleNewPass')" style="position:absolute;right:10px;top:50%;transform:translateY(-25%);background:transparent;border:none;cursor:pointer;padding:4px;">${svg.eye}</button>
+          </div>
+          <div class="form-group" style="position:relative;">
+            <label data-i18n="confirm_password_label">${t('confirm_password_label')}</label>
+            <input type="password" id="confirmNewPassword" class="input" placeholder="Confirmer le nouveau mot de passe" style="width:100%;padding:12px;padding-right:40px;border-radius:8px;border:1px solid rgba(100,116,139,0.3);background:rgba(30,41,59,0.8);color:#fff;font-size:14px;outline:none;"/>
+            <button type="button" onclick="toggleResetPassword('confirmNewPassword', 'toggleConfirmPass')" style="position:absolute;right:10px;top:50%;transform:translateY(-25%);background:transparent;border:none;cursor:pointer;padding:4px;">${svg.eye}</button>
+          </div>
+          <button class="btn btn-primary btn-full" onclick="confirmResetPassword()" style="margin-top:12px;" data-i18n="btn_confirm">${t('btn_confirm')}</button>
+        </div>
+        <button class="btn btn-ghost btn-full" onclick="closeResetModal()" style="margin-top:8px;" data-i18n="btn_cancel">${t('btn_cancel')}</button>
+      </div>
+    </div>
 
     <div id="toast" class="hidden"></div>
   `;
@@ -184,6 +216,14 @@ function bindEvents() {
   });
 
   document.getElementById('submitBtn').addEventListener('click', handleSubmit);
+
+  const forgotLink = document.getElementById('forgotPasswordLink');
+  if (forgotLink) {
+    forgotLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      document.getElementById('resetPasswordModal').style.display = 'flex';
+    });
+  }
 
   document.addEventListener('click', handleClickOutside);
 }
@@ -243,7 +283,7 @@ function showToastMsg(msg) {
   setTimeout(() => toast.classList.add('hidden'), 4000);
 }
 
-function handleSubmit() {
+async function handleSubmit() {
   const errors = {};
   const email = validateEmail(state.email);
   if (!email.valid) errors.email = email.error;
@@ -261,13 +301,39 @@ function handleSubmit() {
   btn.disabled = true;
   btn.innerHTML = '<div class="spinner"></div> ' + t('btn_logging_in');
 
-  setTimeout(() => {
-    localStorage.setItem('userName', state.email.split('@')[0]);
-    localStorage.setItem('userEmail', state.email);
-    showSuccessModal();
+  // Check localStorage for user
+  const storedUser = localStorage.getItem('flash_user');
+  
+  if (!storedUser) {
+    showErrorModal('No existe cuenta con ese email. Regístrate primero.');
     btn.disabled = false;
     btn.innerHTML = t('btn_login');
-  }, 1500);
+    return;
+  }
+  
+  const user = JSON.parse(storedUser);
+  
+  // Check if email matches
+  if (user.email !== state.email) {
+    showErrorModal('No existe cuenta con ese email. Regístrate primero.');
+    btn.disabled = false;
+    btn.innerHTML = t('btn_login');
+    return;
+  }
+  
+  // Check if password matches
+  if (user.password !== state.password) {
+    showErrorModal('Contraseña incorrecta.');
+    btn.disabled = false;
+    btn.innerHTML = t('btn_login');
+    return;
+  }
+  
+  // Login successful
+  localStorage.setItem('token', 'local-token-' + Date.now());
+  localStorage.setItem('userName', user.name);
+  localStorage.setItem('userEmail', user.email);
+  showSuccessModal();
 }
 
 function showSuccessModal() {
@@ -299,6 +365,66 @@ function showErrorModal(msg) {
   `;
   document.body.appendChild(modal);
   applyTranslations();
+}
+
+function closeResetModal() {
+  document.getElementById('resetPasswordModal').style.display = 'none';
+  document.getElementById('resetStep1').style.display = 'block';
+  document.getElementById('resetStep2').style.display = 'none';
+}
+
+async function sendResetCode() {
+  const email = document.getElementById('resetEmail').value;
+  if (!email) return;
+  
+  try {
+    await api.auth.requestPasswordReset(email);
+    document.getElementById('resetEmailDisplay').textContent = email;
+    document.getElementById('resetStep1').style.display = 'none';
+    document.getElementById('resetStep2').style.display = 'block';
+  } catch (error) {
+    showToastMsg(error.message || 'Error sending reset code');
+  }
+}
+
+async function confirmResetPassword() {
+  const code = document.getElementById('resetCode').value;
+  const newPass = document.getElementById('newPassword').value;
+  const confirmPass = document.getElementById('confirmNewPassword').value;
+  if (!code || !newPass || !confirmPass) return;
+  if (newPass !== confirmPass) {
+    showToastMsg(t('passwords_not_match'));
+    return;
+  }
+  
+  const email = document.getElementById('resetEmail').value;
+  
+  try {
+    await api.auth.resetPassword(email, code, newPass);
+    closeResetModal();
+    showToastMsg(t('password_reset_success'));
+  } catch (error) {
+    showToastMsg(error.message || 'Error resetting password');
+  }
+}
+
+function toggleResetPassword(inputId, btnId) {
+  const input = document.getElementById(inputId);
+  const btn = document.querySelector(`[onclick="toggleResetPassword('${inputId}', '${btnId}')"]`);
+  if (input.type === 'password') {
+    input.type = 'text';
+    btn.innerHTML = svg.eyeOff;
+  } else {
+    input.type = 'password';
+    btn.innerHTML = svg.eye;
+  }
+}
+
+function showToastMsg(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.remove('hidden');
+  setTimeout(() => toast.classList.add('hidden'), 4000);
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
