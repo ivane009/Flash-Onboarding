@@ -1,69 +1,62 @@
 # Flash Onboarding
 
-A modern, multilingual Bitcoin onboarding platform designed for the African market, built with React and i18next for internationalization.
+> A modern, multilingual Bitcoin onboarding platform designed for the African market
 
-## Project Overview
+![Bitcoin](https://img.shields.io/badge/Bitcoin-Orange?style=for-the-badge&logo=bitcoin)
+![Lightning Network](https://img.shields.io/badge/Lightning%20Network-Fast-blue?style=for-the-badge&logo=lightning)
+![Node.js](https://img.shields.io/badge/Node.js-18+-green?style=for-the-badge&logo=node.js)
+![JavaScript](https://img.shields.io/badge/JavaScript-Vanilla-yellow?style=for-the-badge&logo=javascript)
+
+## 📋 Table of Contents
+
+- [Overview](#overview)
+- [Features](#-features)
+- [Quick Start](#quick-start)
+- [Project Structure](#project-structure)
+- [Development](#development)
+- [API Reference](#api-reference)
+- [Configuration](#configuration)
+- [Testing](#testing)
+- [Deployment](#deployment)
+- [Contributing](#contributing)
+- [License](#license)
+
+## 🎯 Overview
 
 Flash is a web application that guides new users through the process of creating a Bitcoin wallet and purchasing their first sats via Lightning Network. The platform is optimized for mobile money integration across West Africa, supporting multiple languages and currencies.
 
-## Architecture
+### Supported Countries
+- 🇧🇯 Benin
+- 🇹🇬 Togo  
+- 🇬🇭 Ghana
+- 🇨🇮 Côte d'Ivoire
+- 🇧🇫 Burkina Faso
 
-### Tech Stack
+### Supported Languages
+- 🇬🇧 English
+- 🇪🇸 Spanish
+- 🇫🇷 French
+- 🇵🇹 Portuguese
 
-- **Frontend Framework**: React 19 with Create React App
-- **Internationalization**: i18next + react-i18next
-- **Styling**: Custom CSS with CSS Variables
-- **Build Tool**: react-scripts (webpack under the hood)
-- **Testing**: Jest + React Testing Library
+## ✨ Features
 
-### Project Structure
+| Feature | Description |
+|---------|-------------|
+| **User Registration** | Create account with email verification |
+| **OTP Verification** | 6-digit code verification with 15-minute expiration |
+| **Login System** | Email/password authentication |
+| **Password Reset** | Secure password recovery flow |
+| **Profile Management** | Edit name, phone, country (email read-only) |
+| **Multi-language** | 4 languages with easy translation system |
+| **Mobile Money** | Integration with MTN MoMo, Moov Money, Celtiis |
+| **Bitcoin Purchase** | Buy sats via Lightning Network |
+| **Responsive Design** | Mobile-first approach |
 
-```
-flash-onboarding/
-├── public/
-│   ├── landing.html          # Landing page HTML
-│   ├── landing.css          # Landing page styles
-│   ├── landing.js           # Landing page JavaScript
-│   ├── bitcoin-animation.js # Animated Bitcoin widget
-│   ├── index.html          # React app entry point
-│   ├── manifest.json       # PWA manifest
-│   ├── flash.png           # App logo
-│   ├── img/                # Images and icons
-│   │   ├── create.png      # Step 1 illustration
-│   │   ├── sesion.png      # Step 2 illustration
-│   │   ├── buy.png         # Step 3 illustration
-│   │   ├── confir.png       # Step 4 illustration
-│   │   ├── mining.png       # Feature: Mining
-│   │   ├── No Borders.png   # Feature: Borderless
-│   │   ├── Frictionless Payments.png
-│   │   └── Lightning Network.png
-│   └── locales/            # Translation files
-│       ├── en/translation.json
-│       ├── es/translation.json
-│       ├── fr/translation.json
-│       └── pt/translation.json
-├── src/
-│   ├── App.js              # Main React application
-│   ├── styles.css          # App-wide styles
-│   ├── utils/              # Utility functions
-│   └── [React components]
-├── build/                  # Production build output
-└── package.json
-```
-
-### Key Features
-
-1. **Multilingual Support**: 4 languages (English, Spanish, French, Portuguese)
-2. **Responsive Design**: Mobile-first approach with CSS custom properties
-3. **Animated Elements**: SVG-based path animations, Bitcoin price ticker
-4. **PWA Ready**: Manifest and service worker configuration
-5. **Mobile Money Integration**: Support for MTN MoMo, Moov Money, Celtiis, Togocel
-
-## Getting Started
+## 🚀 Quick Start
 
 ### Prerequisites
-
-- Node.js 18+ and npm
+- Node.js 18+
+- npm 8+
 
 ### Installation
 
@@ -74,101 +67,337 @@ cd Flash-Onboarding
 
 # Install dependencies
 npm install
+```
 
-# Start development server
+### Running the Application
+
+**Frontend Only (Recommended for development)**
+```bash
+npm start
+```
+Access at: http://localhost:3000
+
+**Full Stack (Frontend + Backend)**
+```bash
+# Terminal 1: Start backend (port 3001)
+npm run server
+
+# Terminal 2: Start frontend (port 3000)  
 npm start
 ```
 
-The app will open at [http://localhost:3000](http://localhost:3000).
+## 📁 Project Structure
 
-### Build for Production
-
-```bash
-npm run build
+```
+flash-onboarding/
+├── public/                          # Static files - no build required
+│   ├── index.html                   # Landing page
+│   ├── flash.png                   # App logo
+│   ├── favicon.ico                # Favicon
+│   ├── html/                      # Application pages
+│   │   ├── crear-cuenta.html     # Registration
+│   │   ├── verificar-codigo.html  # OTP verification
+│   │   ├── iniciar-sesion.html   # Login
+│   │   ├── comprar-sats.html      # Buy Bitcoin
+│   │   ├── mi-espacio.html       # Profile/Settings
+│   │   └── history.html           # Transaction history
+│   ├── js/                       # JavaScript modules
+│   │   ├── app-crear-cuenta.js  # Registration + OTP modal
+│   │   ├── iniciar-sesion.js     # Login + password reset
+│   │   ├── verificar-codigo.js     # OTP verification
+│   │   ├── comprar-sats.js        # Purchase flow
+│   │   ├── mi-espacio.js         # Profile management
+│   │   ├── api.js                # API client
+│   │   └── bitcoin-animation.js   # Blockchain visualization
+│   ├── css/                      # Stylesheets
+│   ├── img/                      # Images and icons
+│   └── locales/                  # Translation files
+│       ├── en/translation.json
+│       ├── es/translation.json
+│       ├── fr/translation.json
+│       └── pt/translation.json
+├── backend/
+│   └── server.js                  # Express API server
+├── package.json
+├── README.md
+├── AGENTS.md                      # AI agent guidance
+└── CLAUDE.md                      # Claude AI instructions
 ```
 
-Production files will be generated in the `build/` directory.
+## 🛠 Development
 
-## Development
+### Frontend Architecture
+
+The frontend uses vanilla JavaScript with these patterns:
+
+**State Management**
+```javascript
+const state = {
+  form: { name: '', email: '', password: '' },
+  lang: localStorage.getItem('lang') || 'es'
+};
+```
+
+**Translation Usage**
+```html
+<!-- In HTML -->
+<span data-i18n="welcome">Welcome</span>
+```
+
+```javascript
+// In JavaScript
+t('welcome');  // Returns translated string
+```
+
+### localStorage Keys
+
+| Key | Type | Description |
+|-----|------|-------------|
+| `flash_user` | JSON | User profile: `{name, email, password, whatsapp, country, verified}` |
+| `pending_user_email` | String | Email awaiting verification |
+| `pending_otp` | String | Current 6-digit OTP code |
+| `pending_otp_expires` | Number | OTP expiration timestamp (15 min) |
+| `token` | String | Authentication token |
+| `userName` | String | Display name |
+| `userEmail` | String | User email |
+| `lang` | String | Selected language code (en/es/fr/pt) |
+
+### OTP Flow
+
+```
+1. User fills registration form
+2. Click "Crear cuenta" → OTP generated
+3. Modal displays OTP code (e.g., 584729)
+4. User enters code on verification page
+5. Code validated against localStorage
+6. User marked as verified → redirect to login
+```
 
 ### Adding Translations
 
-Translation files are located in `public/locales/{lang}/translation.json`. Each key-value pair corresponds to a `data-i18n` attribute in the HTML.
+1. Edit `public/locales/{lang}/translation.json`
+2. Add key-value pair: `"new_key": "Translated Value"`
+3. Use in HTML: `data-i18n="new_key"`
+4. Use in JS: `t('new_key')`
 
-**Example:**
+### Adding New Pages
 
-```json
+1. Create `public/html/{page-name}.html`
+2. Include CSS and JS:
+```html
+<link rel="stylesheet" href="../css/your-styles.css"/>
+<script src="../js/your-script.js"></script>
+```
+3. Add translation keys for all text
+
+## 📡 API Reference
+
+### Authentication Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/v1/auth/register` | Register new user |
+| POST | `/api/v1/auth/login` | User login |
+| POST | `/api/v1/auth/verify-otp` | Verify OTP code |
+| POST | `/api/v1/auth/regenerate-otp` | Request new OTP |
+| POST | `/api/v1/auth/request-password-reset` | Password reset |
+| GET | `/api/v1/auth/me` | Get current user |
+| POST | `/api/v1/auth/logout` | User logout |
+
+### Transaction Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/v1/transactions` | List user transactions |
+| POST | `/api/v1/transactions/create` | Create transaction |
+| GET | `/api/v1/transactions/:id` | Get transaction details |
+| GET | `/api/v1/transactions/resume` | Transaction summary |
+| GET | `/api/v1/transactions/remaining` | Remaining allowance |
+
+### API Request/Response Examples
+
+**Register**
+```bash
+POST /api/v1/auth/register
+Content-Type: application/json
+
 {
-  "hero_title": "Buy Bitcoin starting<br>at 100 FCFA !",
-  "hero_cta": "Get Started"
+  "name": "John Doe",
+  "email": "john@example.com",
+  "password": "securepass123",
+  "password_confirmation": "securepass123",
+  "whatsapp": "+22997970000",
+  "country": "BJ"
 }
 ```
 
-```html
-<h1 data-i18n="hero_title">Buy Bitcoin starting<br>at 100 FCFA !</h1>
-<button data-i18n="hero_cta">Get Started</button>
+**Login**
+```bash
+POST /api/v1/auth/login
+Content-Type: application/json
+
+{
+  "email": "john@example.com",
+  "password": "securepass123"
+}
 ```
 
-To add a new language:
-1. Create `public/locales/{code}/translation.json`
-2. Copy structure from existing translation file
-3. Translate all values
-4. Add language option to language selector in `landing.html`
+**Response**
+```json
+{
+  "success": true,
+  "data": {
+    "user": {
+      "id": "user-123",
+      "name": "John Doe",
+      "email": "john@example.com"
+    },
+    "token": "eyJhbGciOiJIUzI1NiJ9..."
+  }
+}
+```
 
-### Adding New Sections
+## ⚙️ Configuration
 
-1. Add HTML structure in `landing.html`
-2. Add corresponding CSS in `landing.css`
-3. If interactive, add JavaScript in `landing.js`
-4. Add translation keys for all text content
+### Environment Variables
 
-### Styling Conventions
+Create a `.env` file in the root directory:
 
-- CSS Variables defined in `:root` for theming
-- BEM-like naming for component classes
-- Mobile-first responsive breakpoints
+```env
+# Server Configuration
+PORT=3001
 
-## Git Workflow
+# JWT Configuration  
+JWT_SECRET=your-super-secret-key-change-in-production
 
-### Branch Naming
+# Optional: Production API URL
+# API_BASE=https://api.bitcoinflash.xyz
+```
 
-- `main` - Production-ready code
-- Feature branches: `feature/description` or `fix/description`
+### Backend CORS Configuration
 
-### Commit Messages
+The backend is configured to accept requests from:
+- `localhost:3000` (development)
+- `localhost:3001` (backend itself)
+- Any origin in development mode
 
-Use clear, descriptive commit messages:
-- `feat: add new feature`
-- `fix: resolve issue with component`
-- `docs: update documentation`
-- `style: adjust styling`
-- `refactor: restructure code`
+For production, update the CORS configuration in `backend/server.js`.
 
-### Pull Requests
+## 🧪 Testing
 
-1. Create feature branch from `main`
-2. Make changes with clear commits
-3. Push and create PR
-4. Require review before merging
+### Manual Testing Checklist
 
-## Environment
+- [ ] Registration flow with OTP verification
+- [ ] Login with created credentials
+- [ ] Password reset functionality
+- [ ] Profile editing (name, phone, country)
+- [ ] Email field remains read-only
+- [ ] Language switching persists
+- [ ] Mobile responsive on various devices
+- [ ] Bitcoin purchase flow
 
-The project uses React environment variables. For Create React App, prefix variables with `REACT_APP_`.
+### Browser Console Debugging
 
-## Browser Support
+Open DevTools (F12) and check Console for:
 
-- Chrome/Edge 90+
-- Firefox 88+
-- Safari 14+
-- Mobile browsers (iOS Safari, Chrome for Android)
+| Log Prefix | Purpose |
+|------------|---------|
+| `[API]` | API request/response debugging |
+| `[REGISTER]` | Registration OTP generation |
+| `[OTP]` | Verification status |
+| `[AUTH]` | Authentication events |
 
-## License
+### Test Accounts
+
+For local development without backend:
+```bash
+Email: test@test.com
+Password: password123
+```
+
+Or register a new account through the UI.
+
+## 🚀 Deployment
+
+### Frontend Deployment
+
+The frontend is a static site deployable to:
+
+| Service | Instructions |
+|---------|--------------|
+| **GitHub Pages** | Push to `gh-pages` branch |
+| **Netlify** | Connect repo, deploy automatically |
+| **Vercel** | Import project, deploy |
+| **AWS S3** | Upload `public/` folder to S3 bucket |
+
+### Backend Deployment
+
+For production backend:
+
+1. Set up Node.js environment (Ubuntu/Docker)
+2. Configure environment variables:
+   ```bash
+   export PORT=3001
+   export JWT_SECRET=production-secret
+   ```
+3. Replace in-memory storage with database (MongoDB/PostgreSQL)
+4. Set up proper CORS origins
+5. Configure Nginx/Apache with HTTPS
+6. Use PM2 for process management:
+   ```bash
+   npm install -g pm2
+   pm2 start backend/server.js --name flash-api
+   ```
+
+## 🤝 Contributing
+
+### Git Workflow
+
+```bash
+# Create feature branch
+git checkout -b feature/my-new-feature
+
+# Make changes and commit
+git add .
+git commit -m "feat: add new feature"
+
+# Push and create PR
+git push origin feature/my-new-feature
+```
+
+### Commit Message Convention
+
+| Type | Description |
+|------|-------------|
+| `feat:` | New feature |
+| `fix:` | Bug fix |
+| `docs:` | Documentation |
+| `style:` | Formatting, no code change |
+| `refactor:` | Code refactoring |
+| `test:` | Adding tests |
+| `chore:` | Maintenance |
+
+### Pull Request Process
+
+1. Fork the repository
+2. Create feature branch from `main`
+3. Make atomic, well-described commits
+4. Push and create Pull Request
+5. Address review feedback
+6. Squash and merge when approved
+
+## 📄 License
 
 Private project - All rights reserved
 
-## Resources
+## 🔗 Useful Resources
 
-- [React Documentation](https://react.dev)
-- [i18next Documentation](https://www.i18next.com/)
-- [Create React App Docs](https://create-react-app.dev/)
-- [Lightning Network Info](https://lightning.network/)
+- [MDN Web Docs](https://developer.mozilla.org/) - JavaScript reference
+- [Express.js Guide](https://expressjs.com/en/guide/routing.html) - API routing
+- [Node.js Docs](https://nodejs.org/docs/latest/) - Server-side JavaScript
+- [Can I Use](https://caniuse.com/) - Browser compatibility
+- [Lightning Network](https://lightning.network/) - Second layer protocol
+
+---
+
+**Built with ⚡ for Africa**
